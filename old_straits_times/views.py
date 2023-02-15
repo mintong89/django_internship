@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseRedirect
 
 from .models import Story
 
@@ -25,3 +26,28 @@ def story(request, story_id):
     return render(request, template_name, {
         'story': story
     })
+    
+def auth_login(request):
+    template_name = 'old_straits_times/login.html'
+    
+    context = {
+        'error_message': ''
+    }
+    
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect('/oldstimes/')
+        else:
+            context['error_message'] = 'Username or password incorrect.'
+    
+    return render(request, template_name, context)
+
+def auth_logout(request):    
+    logout(request)
+    
+    return HttpResponseRedirect('/oldstimes/')
+    

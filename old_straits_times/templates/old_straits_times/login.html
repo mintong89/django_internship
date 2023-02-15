@@ -1,0 +1,29 @@
+{% extends './base.html' %}
+
+{% block content %}
+    <div class="d-flex flex-column align-items-center">
+        <h1>Welcome back to Old Straits Time!</h1>
+        <div class="login-panel card p-4">
+            {% if error_message %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error_message }}
+                </div>
+            {% endif %}
+            <h5>Login in with your Old Straits Time account:</h5>
+            <form method="POST">
+                {% csrf_token %}
+                <label for="username" class="form-label fs-7 text-uppercase">Username</label>
+                <div class="input-group mb-3">
+                    <input id="username" name="username" type="text" class="form-control" aria-label="Username">
+                </div>
+                <label for="password" class="form-label fs-7 text-uppercase">Password</label>
+                <div class="input-group mb-3">
+                    <input type="password" id="password" name="password" type="text" class="form-control" aria-label="Password">
+                </div>
+                <div class="d-flex justify-content-center pt-3">
+                    <input type="submit" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}
