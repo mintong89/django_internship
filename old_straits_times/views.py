@@ -50,4 +50,13 @@ def auth_logout(request):
     logout(request)
     
     return HttpResponseRedirect('/oldstimes/')
+
+def profile(request):
+    template_name = 'old_straits_times/profile.html'
     
+    return render(request, template_name)
+
+def post_story(request):
+    template_name = 'old_straits_times/post_story.html'
+    
+    return render(request, template_name)

@@ -1,0 +1,7 @@
+{% extends './base.html' %}
+
+{% block content %}
+    <div>
+        {{ request.user.first_name }} {{ request.user.last_name }}
+    </div>
+{% endblock content %}
