@@ -1,0 +1,22 @@
+.fs-7 {
+    font-size: 0.75rem !important;
+}
+
+.fs-8 {
+    font-size: 0.5rem !important;
+}
+
+.card:hover {
+    filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.sidebar {
+    width: 300px;
+}
+
+.gg-eye {
+    --ggs: 0.75;
+}

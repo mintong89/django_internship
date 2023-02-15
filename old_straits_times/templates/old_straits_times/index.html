@@ -1,0 +1,36 @@
+{% extends './base.html' %}
+
+{% block content %}
+      <div class="row gx-8">
+            <div class="col">
+                  <h2>Trending</h2>
+                  <div class="row row-cols-1 gx-0 gy-4">
+                        {% for story in trending_stories %}
+                              <a class="text-muted text-decoration-none" href="{% url 'oldstimes:story' story.id %}">
+                                    <div class="card">
+                                          <div class="card-body">
+                                                <h5 class="card-title">{{ story.title }}</h5>
+                                                <h6 class="card-subtitle mb-2 text-muted">{{ story.get_genre }}</h6>
+                                                <p class="card-text">{{ story.abstract }}</p>
+                                                <div class="d-flex justify-content-between">
+                                                      <h6>Read more...</h6>
+                                                      <div class="d-flex text-body-tertiary ">
+                                                            <p id='views' class="fs-7 mb-0">{{ story.get_views_total }}</p>
+                                                            <p class="fs-7 mb-0 mx-2">
+                                                                  <gg-icon class="gg-eye"></gg-icon>
+                                                            </p>
+                                                      </div>
+                                                </div>
+                                          </div>
+                                    </div>
+                              </a>
+                        {% endfor %}
+                  </div>
+            </div>
+            <div class="sidebar">
+                  <div>
+                        You may like it...
+                  </div>
+            </div>
+      </div>
+{% endblock content %}

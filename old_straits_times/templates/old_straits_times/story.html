@@ -1,0 +1,33 @@
+{% extends './base.html' %}
+
+{% block content %}
+    <div>
+        <h2>{{ story.title }}</h2>
+        <h6>{{ story.get_genre }}</h6>
+        <div class="d-flex justify-content-between align-items-end">
+            <div>
+                <div class="d-flex mb-2">
+                    <p class="fs-7 mb-0">Date published: {{ story.date_published }}</p>
+                    <p class="fs-7 mb-0 mx-2">●</p>
+                    <p class="fs-7 mb-0">Date last updated: {{ story.date_last_updated }}</p>
+                </div>
+                <div class="d-flex mb-2">
+                    <p class="fs-7 mb-0">Total words: {{ story.get_word_count }}</p>
+                    <p class="fs-7 mb-0 mx-2">●</p>
+                    <p class="fs-7 mb-0">Estimated reading time taken: {{ story.get_reading_time_taken }} minutes</p>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex mb-2 text-body-tertiary">
+                    <p class="fs-7 mb-0 mx-2">
+                        <gg-icon class="gg-eye"></gg-icon>
+                    </p>
+                    <p id='views' class="fs-7 mb-0">{{ story.get_views_total }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="py-2">
+            {{ story.content | safe }}
+        </div>
+    </div>
+{% endblock content %}
