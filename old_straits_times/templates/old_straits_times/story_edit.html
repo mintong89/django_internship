@@ -1,0 +1,92 @@
+{% extends './base.html' %}
+
+{% block content %}
+    {% if current_story.author.pk == request.user.pk %}
+        <form method="POST" onsubmit="return submitStory(this)">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <label for="title" class="form-label">Title</label>
+                <div class="input-group">
+                <input name="title" type="text" class="form-control" placeholder="Title" value="{{ current_story.title }}" required>
+                </div>
+            </div>
+            
+            <input id="forGenre" type="hidden" value="{{ current_story.get_genre }}" />
+            <div class="mb-4">
+                <label for="genre" class="form-label">Genre</label>
+                <select name="genre" class="form-select" size="3" aria-label="multiple select" multiple required>
+                    {% for genre in all_genre %}
+                        <option value="{{ genre }}" genre-element>{{ genre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="abstract" class="form-label">Abstract</label>
+                <textarea name="abstract" class="form-control" style="height: 100px;">{{ current_story.abstract }}</textarea>
+            </div>
+
+            <input id="forContent" type="hidden" value="{{ current_story.content }}" />
+            <div class="mb-4">
+                <input name="content" id='contentInput' type='hidden' value="" />
+                <label for="content" class="form-label">Content</label>
+                <div id="ckContent"></div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-secondary" onclick="history.back()">Back</button>
+                <div>
+                    <input form="form-delete" type="submit" class="btn btn-danger me-1" value="Delete" />
+                    <input type="submit" class="btn btn-primary" />
+                </div>
+            </div>
+        </form>
+        <form method="POST" class="d-hidden" id="form-delete" onsubmit="return deleteStory()">
+            {% csrf_token %}
+            
+            <input type="hidden" name="delete_story" value="true" />
+        </form>
+    {% else %}
+        <h2>{{ current_story.title }}</h2>
+        <p class="h6">You are not author of this story!</p>
+        <a class="fs-7" style="cursor: pointer;" onclick="history.back()">Go back.</a>
+    {% endif %}
+
+    <!-- ckeditor javascript -->
+    <script src="https://cdn.ckeditor.com/4.20.2/full/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace('ckContent');
+    </script>
+
+    <script>
+        // to show selected genre.
+        const selectedGenre = document.getElementById('forGenre')?.value
+        if (selectedGenre) {
+            const selectedGenreList = selectedGenre.split(', ')
+            const allGenreEl = document.querySelectorAll('[genre-element]')
+            allGenreEl.forEach(el => {
+                if (selectedGenreList.includes(el.value)) {
+                    el.selected = true
+                }
+            })
+        }
+
+        // to show content
+        const contentValue = document.getElementById('forContent')?.value
+        if (contentValue) {
+            CKEDITOR.instances.ckContent.setData(contentValue)
+        }
+
+        const submitStory = (form) => {
+            contentData = CKEDITOR.instances.ckContent.getData()
+            if (contentData) {
+                document.getElementById('contentInput').value = contentData
+            }
+        }
+
+        const deleteStory = () => {
+            return confirm('Are you sure you want to delete the story?')
+        }
+    </script>
+{% endblock content %}

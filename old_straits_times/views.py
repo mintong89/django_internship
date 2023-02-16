@@ -23,7 +23,7 @@ def story(request, story_id):
     template_name = 'old_straits_times/story.html'
     
     # add a view count for each user enter the page
-    if story:
+    if story and story.author.pk != request.user.pk:
         story.views_total += 1
         story.save()
     
@@ -60,9 +60,9 @@ def profile(request):
     
     return render(request, template_name)
 
-def post_story(request):
+def story_post(request):
     all_genre = Genre.objects.all()
-    template_name = 'old_straits_times/post_story.html'
+    template_name = 'old_straits_times/story_post.html'
     
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -90,4 +90,38 @@ def post_story(request):
     
     return render(request, template_name, {
         'all_genre': all_genre
+    })
+    
+def story_edit(request, story_id):
+    current_story = get_object_or_404(Story, pk=story_id) 
+    all_genre = Genre.objects.all()
+    template_name = 'old_straits_times/story_edit.html'
+
+    if request.method == 'POST':
+        deleteStory = request.POST.get('delete_story')
+        if deleteStory == 'true':
+            current_story.delete()
+            return HttpResponseRedirect(reverse('oldstimes:index'))
+        
+        title = request.POST.get('title')
+        genre = request.POST.getlist('genre')
+        abstract = request.POST.get('abstract')
+        content = request.POST.get('content')
+        date_last_updated = timezone.now()
+        
+        genre_pk = list(map(lambda x: Genre.objects.get(name=x), genre))
+        
+        current_story.title = title;
+        current_story.abstract = abstract;
+        current_story.content = content;
+        current_story.date_last_updated = date_last_updated
+        current_story.save()
+        current_story.genre.set(genre_pk)
+        return HttpResponseRedirect(reverse('oldstimes:story', kwargs={'story_id': current_story.pk}))
+    
+    
+
+    return render(request, template_name, {
+        'all_genre': all_genre,
+        'current_story': current_story
     })

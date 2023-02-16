@@ -2,7 +2,12 @@
 
 {% block content %}
     <div>
-        <h2>{{ story.title }}</h2>
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>{{ story.title }}</h2>
+            {% if story.author.pk == request.user.pk %}
+              <a href="{% url 'oldstimes:story_edit' story.pk %}">Edit your story</a>
+            {% endif %}
+        </div>
         <h6>{{ story.get_genre }}</h6>
         <div class="d-flex justify-content-between align-items-end">
             <div>
