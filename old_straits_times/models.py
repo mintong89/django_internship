@@ -7,7 +7,17 @@ import re
 
 # Create your models here.
 class Author(AbstractUser):
-    pass
+    bio = RichTextField()
+    country = models.CharField(max_length=60, default="")
+    
+    def stories(self):
+        return Story.objects.filter(author=self.pk).order_by('-date_published')
+    
+    def stories_count(self):
+        return self.stories().count()
+    
+    def total_views(self): 
+        return sum([story.views_total for story in self.stories()])
     
 class Genre(models.Model):
     name = models.CharField(max_length=30)

@@ -2,6 +2,61 @@
 
 {% block content %}
     <div>
-        {{ request.user.first_name }} {{ request.user.last_name }}
+        <h1>Profile</h1>
+        <div class="row">
+            <div class="col-4 lg:col-3">
+                <div class="mb-4">
+                    <img class="img-thumbnail" src="https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=-mUWsTSENkugJ3qs5covpaj-bhYpxXY-v9RDpzsw504=" />
+                </div>
+                {% if request.user.pk == author.pk %}
+                    <div class="border rounded p-3 mb-4">
+                        <a href="{% url 'oldstimes:settings_profile' %}">
+                            <button class="w-100 btn btn-outline-primary">Edit Profile</button>
+                        </a>
+                    </div>
+                {% endif %}
+                <div class="border rounded p-3">
+                    <h4>{{ author.first_name }} {{ author.last_name }}</h4>
+                    <h6>@{{ author.username }}</h6>
+                    <div class="author-profile-table py-2">
+                        <div class="mb-3">
+                            <div><i class="gg-mail"></i></div>
+                            <span class="fs-7">{{ author.email }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <div><i class="gg-notes"></i></div>
+                            <span class="fs-7">{{ author.stories_count }}</span>
+                        </div>
+                        <div>
+                            <div><i class="gg-eye"></i></div>
+                            <span class="fs-7">{{ author.total_views }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="border rounded p-4 mb-4">
+                    <h2 class="pb-2">Bio</h2>
+                    <div>
+                        {% if author.bio %}
+                            {{ author.bio|safe }}
+                        {% else %}
+                            This user hasn't written anything...
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="border rounded p-4">
+                    <h2 class="pb-2">Latest Stories</h2>
+                    {% for story in author.stories|slice:":5" %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <a href="{% url 'oldstimes:story' story.pk %}">
+                                <span>{{ story.title }}</span>
+                            </a>
+                            <span>{{ story.date_published|date:"M d, Y" }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock content %}

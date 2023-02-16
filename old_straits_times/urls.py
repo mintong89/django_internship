@@ -8,6 +8,7 @@ urlpatterns = [
     path('story/<int:story_id>/edit', views.story_edit, name='story_edit'),
     path('auth/login', views.auth_login, name='auth_login'),
     path('auth/logout', views.auth_logout, name='auth_logout'),
-    path('profile', views.profile, name='profile'),
-    path('post', views.story_post, name='story_post')
+    path('profile/<slug:author_username>', views.profile, name='profile'),
+    path('post', views.story_post, name='story_post'),
+    path('settings/profile', views.settings_profile, name='settings_profile')
 ]

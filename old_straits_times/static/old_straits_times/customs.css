@@ -26,6 +26,22 @@ a > .card:hover {
     margin-bottom: 1rem;
 }
 
+.gg-notes {
+    --ggs: 0.85;
+}
+
 .gg-eye {
-    --ggs: 0.75;
+    --ggs: 0.85;
+}
+
+.author-profile-table > div {
+    display: flex;
+    align-items: center;
+}
+
+.author-profile-table > div > *:not(:last-child) {
+    display: flex;
+    justify-content: center;
+    width: 30px;
+    margin-right: 0.5rem;
 }

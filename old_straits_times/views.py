@@ -55,10 +55,14 @@ def auth_logout(request):
     
     return HttpResponseRedirect(reverse('oldstimes:index'))
 
-def profile(request):
+def profile(request, author_username):
     template_name = 'old_straits_times/profile.html'
     
-    return render(request, template_name)
+    authorData = get_object_or_404(Author, username=author_username)
+    
+    return render(request, template_name, {
+        "author": authorData
+    })
 
 def story_post(request):
     all_genre = Genre.objects.all()
@@ -124,4 +128,11 @@ def story_edit(request, story_id):
     return render(request, template_name, {
         'all_genre': all_genre,
         'current_story': current_story
+    })
+    
+def settings_profile(request):
+    template_name = 'old_straits_times/settings_profile.html'
+    
+    return render(request, template_name, {
+
     })

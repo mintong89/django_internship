@@ -46,7 +46,7 @@
                     </div>
                     {% if request.user.is_authenticated %}
                         <div class="d-flex align-items-center text-black">
-                            <span class="pe-3">Hello <a href="{% url 'oldstimes:profile' %}">{{ request.user.username }}</a></span>
+                            <span class="pe-3">Hello <a href="{% url 'oldstimes:profile' request.user.username %}">{{ request.user.username }}</a></span>
                             <a href="{% url 'oldstimes:auth_logout' %}">
                                 <button class="btn btn-outline-primary">Sign Out</button>
                             </a>
