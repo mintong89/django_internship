@@ -34,7 +34,7 @@ class Story(models.Model):
         return f'{self.views_total:3}'
     
     def get_word_count(self):
-        return len(re.sub(r'<.*?>||&.*?;', '', self.content))
+        return len(re.sub(r'<.*?>||&.*?;||^\n', '', self.content).strip())
     
     def get_reading_time_taken(self):
         return round(self.get_word_count() / 200, 2)
