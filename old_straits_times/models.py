@@ -10,6 +10,11 @@ class Author(AbstractUser):
     bio = RichTextField()
     country = models.CharField(max_length=60, default="")
     
+    social1 = models.CharField(max_length=120, default="")
+    social2 = models.CharField(max_length=120, default="")
+    social3 = models.CharField(max_length=120, default="")
+    social4 = models.CharField(max_length=120, default="")
+    
     def stories(self):
         return Story.objects.filter(author=self.pk).order_by('-date_published')
     

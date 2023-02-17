@@ -10,6 +10,26 @@ import logging
 
 # Create your views here.
 
+def set_post_value(req, obj, value: str, list_obj: (object | bool) = False, allow_empty = True):
+    if list_obj:
+        result = req.POST.getlist(value)
+    else:
+        result = req.POST.get(value)
+    
+    if result and not allow_empty:
+        return False
+    
+    if list_obj:
+        result = req.POST.getlist(value)
+        return list(map(lambda x: list_obj.objects.get(name=x), result))
+    else:
+        setattr(obj, value, result)
+    
+    return True
+
+def set_post_value_batch(req, obj, values: list[str]):
+    [set_post_value(req, obj, value) for value in values]
+
 def index(request):
     trending_stories = Story.objects.order_by('-views_total')[:5]
     template_name = 'old_straits_times/index.html'
@@ -102,11 +122,13 @@ def story_edit(request, story_id):
     template_name = 'old_straits_times/story_edit.html'
 
     if request.method == 'POST':
+        # delete story
         deleteStory = request.POST.get('delete_story')
         if deleteStory == 'true':
             current_story.delete()
             return HttpResponseRedirect(reverse('oldstimes:index'))
         
+        # edit story
         title = request.POST.get('title')
         genre = request.POST.getlist('genre')
         abstract = request.POST.get('abstract')
@@ -132,7 +154,47 @@ def story_edit(request, story_id):
     
 def settings_profile(request):
     template_name = 'old_straits_times/settings_profile.html'
+    author = get_object_or_404(Author, pk=request.user.pk)
+    
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        new_password_confirmation = request.POST.get('new_password_confirmation')
+        
+        if current_password and new_password and new_password_confirmation:
+            if new_password != new_password_confirmation:
+                return render(request, template_name, {
+                    "author": author,
+                    'error_message': "New password is not same as confirmation!"
+                })   
+            
+            if author.check_password(new_password):
+                author.set_password(new_password)
+            else:
+                return render(request, template_name, {
+                    "author": author,
+                    'error_message': "Current password is not correct!"
+                })       
+        
+        set_post_value_batch(request, author, [
+            'email',
+            'bio',
+            'first_name',
+            'last_name',
+            'country',
+            'social1',
+            'social2',
+            'social3',
+            'social4'
+        ])
+        author.save()
+        
+        return render(request, template_name, {
+            "author": author,
+            'success_message': "The profile has been successfully updated."
+        })
+        
     
     return render(request, template_name, {
-
+        "author": author
     })
