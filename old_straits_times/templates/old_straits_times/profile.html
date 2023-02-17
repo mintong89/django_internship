@@ -19,39 +19,47 @@
                     <h4>{{ author.first_name }} {{ author.last_name }}</h4>
                     <h6>@{{ author.username }}</h6>
                     <div class="author-profile-table py-2">
-                        <div class="mb-3">
+                        <div>
                             <div><i class="gg-mail"></i></div>
                             <span class="fs-7">{{ author.email }}</span>
                         </div>
-                        <div class="mb-3">
+                        <div>
                             <div><i class="gg-notes"></i></div>
                             <span class="fs-7">{{ author.stories_count }}</span>
                         </div>
-                        <div class="mb-3">
+                        <div>
                             <div><i class="gg-eye"></i></div>
                             <span class="fs-7">{{ author.total_views }}</span>
                         </div>
-                        <div class="mb-3">
+                        <div>
                             <input type="hidden" id="countryCode" value="{{ author.country }}" />
                             <div><i class="gg-globe-alt"></i></div>
                             <span id="countryText" class="fs-7"></span>
                         </div>
-                        <div class="mb-3">
-                            <div><i class="gg-link"></i></div>
-                            <a href="{{ author.social1 }}"><span class="fs-7">{{ author.social1 }}</span></a>
-                        </div>
-                        <div class="mb-3">
-                            <div><i class="gg-link"></i></div>
-                            <a href="{{ author.social2 }}"><span class="fs-7">{{ author.social2 }}</span></a>
-                        </div>
-                        <div class="mb-3">
-                            <div><i class="gg-link"></i></div>
-                            <a href="{{ author.social3 }}"><span class="fs-7">{{ author.social3 }}</span></a>
-                        </div>
-                        <div>
-                            <div><i class="gg-link"></i></div>
-                            <a href="{{ author.social4 }}"><span class="fs-7">{{ author.social4 }}</span></a>
-                        </div>
+                        {% if author.social1 %}
+                            <div>
+                                <div><i class="gg-link"></i></div>
+                                <a href="{{ author.social1 }}"><span class="fs-7">{{ author.social1 }}</span></a>
+                            </div>
+                        {% endif %}
+                        {% if author.social2 %}
+                            <div>
+                                <div><i class="gg-link"></i></div>
+                                <a href="{{ author.social2 }}"><span class="fs-7">{{ author.social2 }}</span></a>
+                            </div>
+                        {% endif %}
+                        {% if author.social3 %}
+                            <div>
+                                <div><i class="gg-link"></i></div>
+                                <a href="{{ author.social3 }}"><span class="fs-7">{{ author.social3 }}</span></a>
+                            </div>
+                        {% endif %}
+                        {% if author.social4 %}
+                            <div>
+                                <div><i class="gg-link"></i></div>
+                                <a href="{{ author.social4 }}"><span class="fs-7">{{ author.social4 }}</span></a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -328,8 +336,6 @@
         ]
     
         const countryCode = document.getElementById('countryCode')?.value
-        if (countryCode) {
-            document.getElementById('countryText').innerText = countries.find(c => c.value == countryCode).text
-        }
+        document.getElementById('countryText').innerText = countryCode ? countries.find(c => c.value == countryCode).text : 'Unknown'
     </script>
 {% endblock content %}

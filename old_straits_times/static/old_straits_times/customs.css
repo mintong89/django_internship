@@ -2,6 +2,10 @@
     font-size: 0.75rem !important;
 }
 
+.fs-7\.5 {
+    font-size: 0.625rem !important;
+}
+
 .fs-8 {
     font-size: 0.5rem !important;
 }
@@ -37,11 +41,18 @@ a > .card:hover {
 .author-profile-table > div {
     display: flex;
     align-items: center;
+    min-height: 1.25em;
 }
+
+.author-profile-table > div:not(:last-child) {
+    margin-bottom: 1rem;
+}
+
 
 .author-profile-table > div > *:not(:last-child) {
     display: flex;
     justify-content: center;
     width: 30px;
+
     margin-right: 0.5rem;
 }
