@@ -11,5 +11,6 @@ urlpatterns = [
     path('register', views.register, name='register'),
     path('profile/<slug:author_username>', views.profile, name='profile'),
     path('post', views.story_post, name='story_post'),
-    path('settings/profile', views.settings_profile, name='settings_profile')
+    path('settings/profile', views.settings_profile, name='settings_profile'),
+    path('category', views.category, name='category')
 ]

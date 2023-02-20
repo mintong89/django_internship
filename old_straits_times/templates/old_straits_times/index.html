@@ -28,8 +28,19 @@
                   </div>
             </div>
             <div class="sidebar">
+                  <h6>Try out other stories...</h6>
                   <div>
-                        You may like it...
+                        {% for story in random_stories %}
+                              <a class="text-muted text-decoration-none" href="{% url 'oldstimes:story' story.id %}">
+                                    <div class="card p-2 mb-2">
+                                          <p class="mb-0">{{ story.title }}</p>
+                                          <div class="fs-7.5 d-flex justify-content-between">
+                                                <p class="mb-0">{{ story.get_genre }}</p>
+                                                <p class="mb-0">{{ story.author.username }}</p>
+                                          </div>
+                                    </div>
+                              </a>
+                        {% endfor %}
                   </div>
             </div>
       </div>

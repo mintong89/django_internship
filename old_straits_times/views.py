@@ -9,11 +9,14 @@ from django.contrib.auth.password_validation import validate_password
 
 from .models import Story, Genre, Author
 
+from random import choice
+
 import logging
 import re
 
 # Create your views here.
 
+# batching set value for posting
 def set_post_value(req, obj, value: str, list_obj: (object | bool) = False, allow_empty = True):
     if list_obj:
         result = req.POST.getlist(value)
@@ -34,12 +37,27 @@ def set_post_value(req, obj, value: str, list_obj: (object | bool) = False, allo
 def set_post_value_batch(req, obj, values: list[str]):
     [set_post_value(req, obj, value) for value in values]
 
+# -----------------------
+
 def index(request):
-    trending_stories = Story.objects.order_by('-views_total')[:5]
     template_name = 'old_straits_times/index.html'
     
+    trending_stories = Story.objects.order_by('-views_total')[:5]
+    
+    pks = Story.objects.values_list('pk', flat=True)
+    random_pks = []
+    if len(pks) <= 5:
+        random_pks = pks
+    else:
+        while len(random_pks) != 5:
+            random_pk = choice(pks)
+            if random_pk not in random_pks:
+                random_pks.append(random_pk)
+    random_stories = Story.objects.filter(id__in=random_pks).order_by('date_last_updated')
+    
     return render(request, template_name, {
-        'trending_stories': trending_stories
+        'trending_stories': trending_stories,
+        'random_stories': random_stories
     })
     
 def story(request, story_id):
@@ -274,3 +292,15 @@ def settings_profile(request):
     return render(request, template_name, {
         "author": author
     })
+    
+def category(request):
+    template_name = 'old_straits_times/category.html'
+    
+    all_genre = Genre.objects.all()
+    context = { 'all_genre': all_genre }
+    
+    selectedGenre = request.GET.getlist('genre')
+    stories = Story.objects.filter(genre__in=selectedGenre).distinct() if selectedGenre else Story.objects.all()
+    context['stories'] = stories[:20]
+    
+    return render(request, template_name, context)
