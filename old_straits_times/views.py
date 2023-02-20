@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 
-from .models import Story, Genre, Author
+from .models import Story, Genre, Author, Comment
 
 from random import choice
 
@@ -68,6 +68,20 @@ def story(request, story_id):
     if story and story.author.pk != request.user.pk:
         story.views_total += 1
         story.save()
+        
+    if request.method == 'POST':
+        post_type = request.POST.get('post_type')
+        
+        # if post type is to post comment
+        if post_type == 'post_comment':
+            content = request.POST.get('content')
+            
+            new_comment = Comment(
+                story=story,
+                commenter=request.user,
+                content=content
+            )
+            new_comment.save()
     
     return render(request, template_name, {
         'story': story

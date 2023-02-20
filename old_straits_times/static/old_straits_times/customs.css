@@ -88,3 +88,35 @@ a > .card:hover {
             line-clamp: 4; 
     -webkit-box-orient: vertical;
 }
+
+.btn-icon {
+    padding-right: 12px;
+}
+
+.btn-icon > div:has(> i) {
+    width: 1.5rem;
+    height: 1.25rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.comment-item-icon {
+    width: 2rem;
+    height: 2rem;
+    min-width: 2rem;
+    min-height: 2rem;
+    margin: .5rem .75rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    --ggs: 2;
+}
+
+.comment-item-text {
+    margin-top: .5rem;
+}
+
+.comment-item-thumb > i {
+    font-size: 1.25rem;
+}

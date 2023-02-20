@@ -45,6 +45,9 @@ class Story(models.Model):
     views_total = models.IntegerField(default=0)
     content = RichTextField()
     
+    def comments(self):
+        return Comment.objects.filter(story=self.pk).order_by('-date_published')
+    
     def get_views_total(self):
         return f'{self.views_total:3}'
     
@@ -61,3 +64,12 @@ class Story(models.Model):
     def __str__(self) -> str:
         return self.title
     
+class Comment(models.Model):
+    story = models.ForeignKey(Story, on_delete=models.CASCADE)
+    commenter = models.ForeignKey(Author, null=True, on_delete=models.SET_NULL)
+    reply_to = models.ForeignKey('Comment', null=True, blank=True, on_delete=models.CASCADE)
+    content = models.TextField(blank=True)
+    date_published = models.DateTimeField('date published', auto_now_add=True)
+    edited = models.BooleanField(default=False)
+    likes = models.ManyToManyField(Author, blank=True, related_name='likeses')
+    dislikes = models.ManyToManyField(Author, blank=True, related_name='dislikeses')

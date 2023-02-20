@@ -19,7 +19,7 @@
                 <div class="d-flex mb-2">
                     <p class="fs-7 mb-0">Total words: {{ story.get_word_count }}</p>
                     <p class="fs-7 mb-0 mx-2">●</p>
-                    <p class="fs-7 mb-0">Estimated reading time taken: {{ story.get_reading_time_taken }} minutes</p>
+                    <p class="fs-7 mb-0">Estimated reading time taken: {{ story.get_reading_time_taken }} minute{{ story.get_reading_time_taken|pluralize }}</p>
                 </div>
             </div>
             <div>
@@ -37,6 +37,63 @@
         </div>
         <div class="py-2">
             {{ story.content | safe }}
+        </div>
+        <div class="border-top py-3">
+            <div class="d-flex align-items-end">
+                <h5>{{ story.comments.count }} Comment{{ story.comments.count|pluralize }}:</h5>
+                <div class="ms-4">
+                    <button class="btn btn-sm btn-icon btn-outline-secondary d-flex align-items-center">
+                        <div><i class="gg-sort-az"></i></div>
+                        Sort by
+                    </button>
+                </div>
+            </div>
+
+            <div class="py-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="post_type" value="post_comment" />
+                    <div class="d-flex mb-2">
+                        <div class="comment-item-icon"><i class="gg-user"></i></div>
+                        <textarea name="content" class="form-control" placeholder="Leave a comment here" style="height: 150px;"></textarea>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <input type="submit" class="btn btn-sm btn-outline-secondary px-3 rounded-pill" value="Post" />
+                    </div>
+                </form>
+            </div>
+
+            <ul class="list-unstyled py-2">
+                {% for comment in story.comments %}
+                    <li class="comment-item mb-4">
+                        <div class="d-flex">
+                            <div class="comment-item-icon"><i class="gg-user"></i></div>
+                            <div class="comment-item-text">
+                                <div class="d-flex align-items-baseline">
+                                    <a href="{% url 'oldstimes:profile' comment.commenter.username %}">
+                                        <p class="mb-0 fs-6 fw-semibold">{{ comment.commenter }}</p>
+                                    </a>
+                                    <p class="mb-0 fs-7 ms-2 text-muted">{{ comment.date_published }}</p>
+                                </div>
+                                <p class="mb-1">{{ comment.content }}</p>
+                                <div class="comment-item-thumb d-flex">
+                                    <div class="d-flex align-items-center me-4">
+                                        <i class="bi bi-hand-thumbs-up"></i>
+                                        <p class="fs-7 ms-2 mb-0">{{ comment.likes.count }}</p>
+                                    </div>
+                                    <div class="d-flex align-items-center me-4">
+                                        <i class="bi bi-hand-thumbs-down"></i>
+                                        <p class="fs-7 ms-2 mb-0">{{ comment.dislikes.count }}</p>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Reply</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 {% endblock content %}

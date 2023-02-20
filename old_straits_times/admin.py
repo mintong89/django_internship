@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Author, Genre, Story
+from .models import Author, Genre, Story, Comment
 
 from django.utils import timezone
 
@@ -28,3 +28,4 @@ class StoriesAdmin(admin.ModelAdmin):
 admin.site.register(Author, UserAdmin)
 admin.site.register(Genre, GenreAdmin)
 admin.site.register(Story, StoriesAdmin)
+admin.site.register(Comment)
