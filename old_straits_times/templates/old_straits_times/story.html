@@ -39,8 +39,8 @@
             {{ story.content | safe }}
         </div>
         <div class="border-top py-3">
-            <div class="d-flex align-items-end">
-                <h5>{{ story.comments.count }} Comment{{ story.comments.count|pluralize }}:</h5>
+            <div class="d-flex align-items-center">
+                <h5 class="mb-0">{{ story.comments.count }} Comment{{ story.comments.count|pluralize }}:</h5>
                 <div class="ms-4">
                     <button class="btn btn-sm btn-icon btn-outline-secondary d-flex align-items-center">
                         <div><i class="gg-sort-az"></i></div>
