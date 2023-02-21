@@ -10,6 +10,10 @@
     font-size: 0.5rem !important;
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
 a > .card:hover {
     filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
     transition-property: all;
@@ -121,8 +125,8 @@ a > .card:hover {
     padding: 0 .5rem 0 .25rem;
 }
 
-.reply-item-thumb {
-    margin-left: 2rem;
+.reply-margin {
+    margin-left: 2.25rem;
 }
 
 .reply-item-thumb > i {

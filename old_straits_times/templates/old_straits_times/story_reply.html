@@ -1,0 +1,54 @@
+<button class="btn btn-link m-0 p-0 text-black text-decoration-none" onclick="triggerShowReplies(this, 'replyPostContainer-{{ comment_pk }}')">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-caret-down-fill"></i>
+        <p class="ms-1 fs-7 mb-0">{{ replies.count }} repl{{ replies.count|pluralize:'y,ies' }}</p>
+    </div>
+</button>
+<ul id="replyPostContainer-{{ comment_pk }}" class="list-unstyled mt-2 d-none" style="margin-left: calc(1rem * {{ recursive_round }});">
+    {% for reply in replies %}
+        <li>
+            <div class="d-flex">
+                <i class="reply-item-icon bi bi-person-circle"></i>
+                <div class="mt-1">
+                    <div class="d-flex align-items-baseline">
+                        <a href="{% url 'oldstimes:profile' reply.commenter.username %}">
+                            <p class="mb-0 fs-6 fw-semibold">{{ reply.commenter }}</p>
+                        </a>
+                        <p class="mb-0 fs-7 ms-2 text-muted">{{ reply.date_published }}</p>
+                    </div>
+                    <p class="mb-1">{{ reply.content }}</p>
+                </div>
+            </div>
+            {% if request.user.is_authenticated %}
+                <div class="reply-margin reply-item-thumb d-flex">
+                    <div onclick="triggerLike(this, 'like_comment', '{{ reply.pk }}')" class="d-flex align-items-center me-4 cursor-pointer">
+                        <i class="bi {% if request.user in reply.likes.all %}bi-hand-thumbs-up-fill{% else %}bi-hand-thumbs-up{% endif %}"></i>
+                        <p class="fs-7 ms-2 mb-0">{{ reply.likes.count }}</p>
+                    </div>
+                    <div onclick="triggerLike(this, 'dislike_comment', '{{ reply.pk }}')" class="d-flex align-items-center me-4 cursor-pointer">
+                        <i class="bi {% if request.user in reply.dislikes.all %}bi-hand-thumbs-down-fill{% else %}bi-hand-thumbs-down{% endif %}"></i>
+                        <p class="fs-7 ms-2 mb-0">{{ reply.dislikes.count }}</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="showReplyPost('replyContainer-{{ reply.pk }}')">Reply</button>
+                    </div>
+                </div>
+                <div id="replyContainer-{{ reply.pk }}" class="d-none">
+                    <div class="d-flex mt-3">
+                        <i class="reply-item-icon bi bi-person-circle"></i>
+                        <form method="POST" class="w-100" onsubmit="postReply(this, '{{ reply.pk }}'); return true;">
+                            <textarea name="content" id="replyContainer-{{ reply.pk }}-textarea" class="form-control" placeholder="Leave a comment here" style="height: 1rem;" required></textarea>
+                            <div class="d-flex justify-content-end mt-3">
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill me-2" onclick="showReplyPost('replyContainer-{{ reply.pk }}', false)">Cancel</button>
+                                <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">Reply</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+            {% if reply.replies.count > 0 %}
+                {% include "old_straits_times/story_reply.html" with recursive_round=recursive_round|add:1 comment_pk=reply.pk replies=reply.replies %}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>

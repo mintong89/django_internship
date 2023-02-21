@@ -94,6 +94,42 @@ def story(request, story_id):
             new_reply.save()
             
             return JsonResponse({'success': 'Replied Sucessfully'}, status=200)
+        
+        elif post_type == 'like_comment':
+            comment_pk = request.POST.get('comment_pk')
+            comment = Comment.objects.get(pk=comment_pk)
+            
+            author = Author.objects.get(pk=request.user.pk)
+            if not comment.likes.filter(pk=request.user.pk).exists():
+                comment.likes.add(author)
+                if comment.dislikes.filter(pk=request.user.pk).exists():
+                    comment.dislikes.remove(author)
+            else:
+                comment.likes.remove(author)
+                
+            return JsonResponse({
+                'message': "Disliked Successfully",
+                'like_count': comment.likes.count(),
+                'dislike_count': comment.dislikes.count()
+            })
+            
+        elif post_type == 'dislike_comment':
+            comment_pk = request.POST.get('comment_pk')
+            comment = Comment.objects.get(pk=comment_pk)
+            
+            author = Author.objects.get(pk=request.user.pk)
+            if not comment.dislikes.filter(pk=request.user.pk).exists():
+                comment.dislikes.add(author)
+                if comment.likes.filter(pk=request.user.pk).exists():
+                    comment.likes.remove(author)
+            else:
+                comment.dislikes.remove(author)
+                
+            return JsonResponse({
+                'message': "Disliked Successfully",
+                'like_count': comment.likes.count(),
+                'dislike_count': comment.dislikes.count()
+            })
     
     return render(request, template_name, {
         'story': story

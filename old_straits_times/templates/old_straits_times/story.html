@@ -80,12 +80,12 @@
                                 <p class="mb-1">{{ comment.content }}</p>
                                 {% if request.user.is_authenticated %}
                                     <div class="comment-item-thumb d-flex">
-                                        <div class="d-flex align-items-center me-4">
-                                            <i class="bi bi-hand-thumbs-up"></i>
+                                        <div onclick="triggerLike(this, 'like_comment', '{{ comment.pk }}')" class="d-flex align-items-center me-4 cursor-pointer">
+                                            <i class="bi {% if request.user in comment.likes.all %}bi-hand-thumbs-up-fill{% else %}bi-hand-thumbs-up{% endif %}"></i>
                                             <p class="fs-7 ms-2 mb-0">{{ comment.likes.count }}</p>
                                         </div>
-                                        <div class="d-flex align-items-center me-4">
-                                            <i class="bi bi-hand-thumbs-down"></i>
+                                        <div onclick="triggerLike(this, 'dislike_comment', '{{ comment.pk }}')" class="d-flex align-items-center me-4 cursor-pointer">
+                                            <i class="bi {% if request.user in comment.dislikes.all %}bi-hand-thumbs-down-fill{% else %}bi-hand-thumbs-down{% endif %}"></i>
                                             <p class="fs-7 ms-2 mb-0">{{ comment.dislikes.count }}</p>
                                         </div>
                                         <div>
@@ -95,7 +95,7 @@
                                     <div id="replyContainer-{{ comment.pk }}" class="d-none">
                                         <div class="d-flex mt-3">
                                             <i class="reply-item-icon bi bi-person-circle"></i>
-                                            <form method="POST" class="w-100" onsubmit="postReply(this, '{{ comment.pk }}'); return false;">
+                                            <form method="POST" class="w-100" onsubmit="postReply(this, '{{ comment.pk }}'); return true;">
                                                 <textarea name="content" id="replyContainer-{{ comment.pk }}-textarea" class="form-control" placeholder="Leave a comment here" style="height: 1rem;" required></textarea>
                                                 <div class="d-flex justify-content-end mt-3">
                                                     <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill me-2" onclick="showReplyPost('replyContainer-{{ comment.pk }}', false)">Cancel</button>
@@ -106,57 +106,7 @@
                                     </div>
                                 {% endif %}
                                 {% if comment.replies.count > 0 %}
-                                    <button class="btn btn-link m-0 p-0 text-black text-decoration-none" onclick="triggerShowReplies(this, 'replyPostContainer-{{ comment.pk }}')">
-                                        <div class="d-flex align-items-center">
-                                            <i class="bi bi-caret-down-fill"></i>
-                                            <p class="ms-1 fs-7 mb-0">{{ comment.replies.count }} repl{{ comment.replies.count|pluralize:'y,ies' }}</p>
-                                        </div>
-                                    </button>
-                                    <ul id="replyPostContainer-{{ comment.pk }}" class="list-unstyled mt-2 d-none">
-                                        {% for reply in comment.replies %}
-                                            <li>
-                                                <div class="d-flex">
-                                                    <i class="reply-item-icon bi bi-person-circle"></i>
-                                                    <div class="mt-1">
-                                                        <div class="d-flex align-items-baseline">
-                                                            <a href="{% url 'oldstimes:profile' reply.commenter.username %}">
-                                                                <p class="mb-0 fs-6 fw-semibold">{{ reply.commenter }}</p>
-                                                            </a>
-                                                            <p class="mb-0 fs-7 ms-2 text-muted">{{ reply.date_published }}</p>
-                                                        </div>
-                                                        <p class="mb-1">{{ reply.content }}</p>
-                                                    </div>
-                                                </div>
-                                                {% if request.user.is_authenticated %}
-                                                    <div class="reply-item-thumb d-flex">
-                                                        <div class="d-flex align-items-center me-4">
-                                                            <i class="bi bi-hand-thumbs-up"></i>
-                                                            <p class="fs-7 ms-2 mb-0">{{ reply.likes.count }}</p>
-                                                        </div>
-                                                        <div class="d-flex align-items-center me-4">
-                                                            <i class="bi bi-hand-thumbs-down"></i>
-                                                            <p class="fs-7 ms-2 mb-0">{{ reply.dislikes.count }}</p>
-                                                        </div>
-                                                        <div>
-                                                            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="showReplyPost('replyContainer-{{ reply.pk }}')">Reply</button>
-                                                        </div>
-                                                    </div>
-                                                    <div id="replyContainer-{{ reply.pk }}" class="d-none">
-                                                        <div class="d-flex mt-3">
-                                                            <i class="reply-item-icon bi bi-person-circle"></i>
-                                                            <form method="POST" class="w-100" onsubmit="postReply(this, '{{ reply.pk }}'); return false;">
-                                                                <textarea name="content" id="replyContainer-{{ reply.pk }}-textarea" class="form-control" placeholder="Leave a comment here" style="height: 1rem;" required></textarea>
-                                                                <div class="d-flex justify-content-end mt-3">
-                                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill me-2" onclick="showReplyPost('replyContainer-{{ reply.pk }}', false)">Cancel</button>
-                                                                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">Reply</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                {% endif %}
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
+                                    {% include "./story_reply.html" with recursive_round=0 comment_pk=comment_pk replies=comment.replies %}
                                 {% endif %}
                             </div>
                         </div>
@@ -167,6 +117,18 @@
     </div>
 
     <script>
+        const swap = (el, posClass = '', negClass = '', condition = true) => {
+            if (el instanceof HTMLElement) {
+                if (condition) {
+                    el.classList.add(posClass)
+                    el.classList.remove(negClass)
+                } else {
+                    el.classList.remove(posClass)
+                    el.classList.add(negClass)
+                }
+            }
+        }
+
         const triggerShowReplies = (buttonEl, repliesContainer) => {
             const repliesContainerEl = document.getElementById(repliesContainer)
 
@@ -213,6 +175,63 @@
                 headers: { "X-CSRFToken": csrftoken },
                 body: replyData
             })
+        }
+
+        const triggerLike = (buttonEl, is = 'like_comment', commentPK) => {
+            const csrftoken = Cookies.get('csrftoken')
+
+            const data = new FormData()
+            data.set('post_type', is)
+            data.set('comment_pk', commentPK)
+
+            fetch("{% url 'oldstimes:story' story.pk %}", {
+                method: 'POST',
+                mode: "same-origin",
+                headers: { "X-CSRFToken": csrftoken },
+                body: data
+            })
+            .then(res => res.json().then(data => {
+                if (is == 'like_comment') {
+                    const likeEl = buttonEl.querySelector('i')
+                    const likeCount = buttonEl.querySelector('p')
+                    const dislikeEl = buttonEl.nextElementSibling.querySelector('i')
+                    const dislikeCount = buttonEl.nextElementSibling.querySelector('p')
+    
+                    swap(likeEl,
+                    'bi-hand-thumbs-up',
+                    'bi-hand-thumbs-up-fill',
+                    !likeEl.classList.contains('bi-hand-thumbs-up')
+                    )
+    
+                    if (likeEl.classList.contains('bi-hand-thumbs-up-fill')) {
+                        dislikeEl.classList.remove('bi-hand-thumbs-down-fill')
+                        dislikeEl.classList.add('bi-hand-thumbs-down')
+                    }
+
+                    likeCount.innerText = data.like_count
+                    dislikeCount.innerText = data.dislike_count
+                } else if (is == 'dislike_comment') {
+                    const dislikeEl = buttonEl.querySelector('i')
+                    const dislikeCount = buttonEl.querySelector('p')
+                    const likeEl = buttonEl.previousElementSibling.querySelector('i')
+                    const likeCount = buttonEl.previousElementSibling.querySelector('p')
+    
+                    swap(dislikeEl,
+                    'bi-hand-thumbs-down',
+                    'bi-hand-thumbs-down-fill',
+                    !dislikeEl.classList.contains('bi-hand-thumbs-down')
+                    )
+    
+                    if (dislikeEl.classList.contains('bi-hand-thumbs-down-fill')) {
+                        likeEl.classList.remove('bi-hand-thumbs-up-fill')
+                        likeEl.classList.add('bi-hand-thumbs-up')
+                    }
+
+                    likeCount.innerText = data.like_count
+                    dislikeCount.innerText = data.dislike_count
+                }
+            }))
+            .catch(err => console.log(err))
         }
     </script>
 {% endblock content %}
