@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxLengthValidator
+from django.db.models import Q
 from ckeditor.fields import RichTextField
 
 import re
@@ -46,7 +47,7 @@ class Story(models.Model):
     content = RichTextField()
     
     def comments(self):
-        return Comment.objects.filter(story=self.pk).order_by('-date_published')
+        return Comment.objects.filter(story=self.pk, reply_to=None).order_by('-date_published')
     
     def get_views_total(self):
         return f'{self.views_total:3}'
@@ -73,3 +74,6 @@ class Comment(models.Model):
     edited = models.BooleanField(default=False)
     likes = models.ManyToManyField(Author, blank=True, related_name='likeses')
     dislikes = models.ManyToManyField(Author, blank=True, related_name='dislikeses')
+    
+    def replies(self):
+        return Comment.objects.filter(reply_to=self)

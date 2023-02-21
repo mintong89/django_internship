@@ -49,25 +49,27 @@
                 </div>
             </div>
 
-            <div class="py-4">
-                <form method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="post_type" value="post_comment" />
-                    <div class="d-flex mb-2">
-                        <div class="comment-item-icon"><i class="gg-user"></i></div>
-                        <textarea name="content" class="form-control" placeholder="Leave a comment here" style="height: 150px;"></textarea>
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <input type="submit" class="btn btn-sm btn-outline-secondary px-3 rounded-pill" value="Post" />
-                    </div>
-                </form>
-            </div>
+            {% if request.user.is_authenticated %}
+                <div class="py-4">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_type" value="post_comment" />
+                        <div class="d-flex mb-2">
+                            <i class="comment-item-icon bi bi-person-circle"></i>
+                            <textarea name="content" class="form-control" placeholder="Leave a comment here" style="height: 150px;" ></textarea>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <input type="submit" class="btn btn-sm btn-outline-secondary px-3 rounded-pill" value="Post" />
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
 
             <ul class="list-unstyled py-2">
                 {% for comment in story.comments %}
                     <li class="comment-item mb-4">
                         <div class="d-flex">
-                            <div class="comment-item-icon"><i class="gg-user"></i></div>
+                            <i class="comment-item-icon bi bi-person-circle"></i>
                             <div class="comment-item-text">
                                 <div class="d-flex align-items-baseline">
                                     <a href="{% url 'oldstimes:profile' comment.commenter.username %}">
@@ -76,19 +78,86 @@
                                     <p class="mb-0 fs-7 ms-2 text-muted">{{ comment.date_published }}</p>
                                 </div>
                                 <p class="mb-1">{{ comment.content }}</p>
-                                <div class="comment-item-thumb d-flex">
-                                    <div class="d-flex align-items-center me-4">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                        <p class="fs-7 ms-2 mb-0">{{ comment.likes.count }}</p>
+                                {% if request.user.is_authenticated %}
+                                    <div class="comment-item-thumb d-flex">
+                                        <div class="d-flex align-items-center me-4">
+                                            <i class="bi bi-hand-thumbs-up"></i>
+                                            <p class="fs-7 ms-2 mb-0">{{ comment.likes.count }}</p>
+                                        </div>
+                                        <div class="d-flex align-items-center me-4">
+                                            <i class="bi bi-hand-thumbs-down"></i>
+                                            <p class="fs-7 ms-2 mb-0">{{ comment.dislikes.count }}</p>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="showReplyPost('replyContainer-{{ comment.pk }}')">Reply</button>
+                                        </div>
                                     </div>
-                                    <div class="d-flex align-items-center me-4">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                        <p class="fs-7 ms-2 mb-0">{{ comment.dislikes.count }}</p>
+                                    <div id="replyContainer-{{ comment.pk }}" class="d-none">
+                                        <div class="d-flex mt-3">
+                                            <i class="reply-item-icon bi bi-person-circle"></i>
+                                            <form method="POST" class="w-100" onsubmit="postReply(this, '{{ comment.pk }}'); return false;">
+                                                <textarea name="content" id="replyContainer-{{ comment.pk }}-textarea" class="form-control" placeholder="Leave a comment here" style="height: 1rem;" required></textarea>
+                                                <div class="d-flex justify-content-end mt-3">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill me-2" onclick="showReplyPost('replyContainer-{{ comment.pk }}', false)">Cancel</button>
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">Reply</button>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3">Reply</button>
-                                    </div>
-                                </div>
+                                {% endif %}
+                                {% if comment.replies.count > 0 %}
+                                    <button class="btn btn-link m-0 p-0 text-black text-decoration-none" onclick="triggerShowReplies(this, 'replyPostContainer-{{ comment.pk }}')">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-caret-down-fill"></i>
+                                            <p class="ms-1 fs-7 mb-0">{{ comment.replies.count }} repl{{ comment.replies.count|pluralize:'y,ies' }}</p>
+                                        </div>
+                                    </button>
+                                    <ul id="replyPostContainer-{{ comment.pk }}" class="list-unstyled mt-2 d-none">
+                                        {% for reply in comment.replies %}
+                                            <li>
+                                                <div class="d-flex">
+                                                    <i class="reply-item-icon bi bi-person-circle"></i>
+                                                    <div class="mt-1">
+                                                        <div class="d-flex align-items-baseline">
+                                                            <a href="{% url 'oldstimes:profile' reply.commenter.username %}">
+                                                                <p class="mb-0 fs-6 fw-semibold">{{ reply.commenter }}</p>
+                                                            </a>
+                                                            <p class="mb-0 fs-7 ms-2 text-muted">{{ reply.date_published }}</p>
+                                                        </div>
+                                                        <p class="mb-1">{{ reply.content }}</p>
+                                                    </div>
+                                                </div>
+                                                {% if request.user.is_authenticated %}
+                                                    <div class="reply-item-thumb d-flex">
+                                                        <div class="d-flex align-items-center me-4">
+                                                            <i class="bi bi-hand-thumbs-up"></i>
+                                                            <p class="fs-7 ms-2 mb-0">{{ reply.likes.count }}</p>
+                                                        </div>
+                                                        <div class="d-flex align-items-center me-4">
+                                                            <i class="bi bi-hand-thumbs-down"></i>
+                                                            <p class="fs-7 ms-2 mb-0">{{ reply.dislikes.count }}</p>
+                                                        </div>
+                                                        <div>
+                                                            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="showReplyPost('replyContainer-{{ reply.pk }}')">Reply</button>
+                                                        </div>
+                                                    </div>
+                                                    <div id="replyContainer-{{ reply.pk }}" class="d-none">
+                                                        <div class="d-flex mt-3">
+                                                            <i class="reply-item-icon bi bi-person-circle"></i>
+                                                            <form method="POST" class="w-100" onsubmit="postReply(this, '{{ reply.pk }}'); return false;">
+                                                                <textarea name="content" id="replyContainer-{{ reply.pk }}-textarea" class="form-control" placeholder="Leave a comment here" style="height: 1rem;" required></textarea>
+                                                                <div class="d-flex justify-content-end mt-3">
+                                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill me-2" onclick="showReplyPost('replyContainer-{{ reply.pk }}', false)">Cancel</button>
+                                                                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">Reply</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
                             </div>
                         </div>
                     </li>
@@ -96,4 +165,54 @@
             </ul>
         </div>
     </div>
+
+    <script>
+        const triggerShowReplies = (buttonEl, repliesContainer) => {
+            const repliesContainerEl = document.getElementById(repliesContainer)
+
+            if (repliesContainerEl) {
+                if (repliesContainerEl.classList.contains('d-none')) {
+                    repliesContainerEl.classList.remove('d-none')
+
+                    const iconEl = buttonEl.querySelector('i')
+                    iconEl.classList.remove('bi-caret-down-fill')
+                    iconEl.classList.add('bi-caret-up-fill')
+                } else {
+                    repliesContainerEl.classList.add('d-none')
+
+                    const iconEl = buttonEl.querySelector('i')
+                    iconEl.classList.remove('bi-caret-up-fill')
+                    iconEl.classList.add('bi-caret-down-fill')
+                }
+            }
+        }
+
+        const showReplyPost = (replyContainer, show = true) => {
+            const replyContainerEl = document.getElementById(replyContainer)
+            if (replyContainerEl) {
+                show ? replyContainerEl.classList.remove('d-none') : replyContainerEl.classList.add('d-none')
+
+                const replyTextAreaEl = document.getElementById(`${replyContainer}-textarea`)
+                replyTextAreaEl.style.height = '1rem'
+                replyTextAreaEl.value = ''
+                replyTextAreaEl.focus()
+            }
+        }
+
+        const postReply = (formEl, commentPK) => {
+            const replyData = new FormData(formEl)
+
+            replyData.set('post_type', 'reply_comment')
+            replyData.set('reply_to', commentPK)
+
+            const csrftoken = Cookies.get('csrftoken')
+            
+            fetch("{% url 'oldstimes:story' story.pk %}", {
+                method: 'POST',
+                mode: "same-origin",
+                headers: { "X-CSRFToken": csrftoken },
+                body: replyData
+            })
+        }
+    </script>
 {% endblock content %}

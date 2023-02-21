@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.utils import timezone
 from django.urls import reverse
 
@@ -10,8 +10,6 @@ from django.contrib.auth.password_validation import validate_password
 from .models import Story, Genre, Author, Comment
 
 from random import choice
-
-import logging
 import re
 
 # Create your views here.
@@ -82,6 +80,20 @@ def story(request, story_id):
                 content=content
             )
             new_comment.save()
+            
+        elif post_type == 'reply_comment':
+            content = request.POST.get('content')
+            reply_to = Comment.objects.get(pk=request.POST.get('reply_to'))
+            
+            new_reply = Comment(
+                story=story,
+                commenter=request.user,
+                content=content,
+                reply_to=reply_to
+            )
+            new_reply.save()
+            
+            return JsonResponse({'success': 'Replied Sucessfully'}, status=200)
     
     return render(request, template_name, {
         'story': story
