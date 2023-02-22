@@ -5,8 +5,10 @@
         <h1>Profile</h1>
         <div class="row">
             <div class="col-12 col-md-4 lg:col-3 mb-4 mb-md-0">
-                <div class="mb-4">
-                    <img class="img-thumbnail w-100" src="{{ author.avatar.url }}" />
+                <div class="mb-4 border rounded ratio ratio-1x1">
+                    <div class="p-2">
+                        <img class="object-fit-fill w-100 h-100" src="{{ author.avatar.url }}" />
+                    </div>
                 </div>
                 {% if request.user.pk == author.pk %}
                     <div class="border rounded p-3 mb-4">
@@ -36,25 +38,25 @@
                             <div><i class="gg-globe-alt"></i></div>
                             <span id="countryText" class="fs-7"></span>
                         </div>
-                        {% if author.social1 %}
+                        {% if author.social1 and author.social1 != 'None' %}
                             <div>
                                 <div><i class="gg-link"></i></div>
                                 <a href="{{ author.social1 }}"><span class="fs-7">{{ author.social1 }}</span></a>
                             </div>
                         {% endif %}
-                        {% if author.social2 %}
+                        {% if author.social2 and author.social2 != 'None' %}
                             <div>
                                 <div><i class="gg-link"></i></div>
                                 <a href="{{ author.social2 }}"><span class="fs-7">{{ author.social2 }}</span></a>
                             </div>
                         {% endif %}
-                        {% if author.social3 %}
+                        {% if author.social3 and author.social3 != 'None' %}
                             <div>
                                 <div><i class="gg-link"></i></div>
                                 <a href="{{ author.social3 }}"><span class="fs-7">{{ author.social3 }}</span></a>
                             </div>
                         {% endif %}
-                        {% if author.social4 %}
+                        {% if author.social4 and author.social4 != 'None' %}
                             <div>
                                 <div><i class="gg-link"></i></div>
                                 <a href="{{ author.social4 }}"><span class="fs-7">{{ author.social4 }}</span></a>
