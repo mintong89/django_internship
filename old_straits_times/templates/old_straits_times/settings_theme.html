@@ -1,0 +1,15 @@
+{% extends './settings_base.html' %}
+
+{% block sub-content %}
+    <div class="card p-4">
+        <h2>Set theme</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <select name="theme_color" class="form-select" onchange="document.getElementById('submitTheme').click();">
+                <option value="light" {% if request.COOKIES.theme_color == 'light' %}selected{% endif %}>Light</option>
+                <option value="dark" {% if request.COOKIES.theme_color == 'dark' %}selected{% endif %}>Dark</option>
+            </select>
+            <input id="submitTheme" class="d-none" type="submit" />
+        </form>
+    </div>
+{% endblock sub-content %}

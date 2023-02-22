@@ -1,3 +1,5 @@
+import datetime
+import json
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, JsonResponse
@@ -12,6 +14,7 @@ from .models import Story, Genre, Author, Comment
 
 from random import choice
 import re
+from django.db.models import Q
 
 # Create your views here.
 
@@ -35,6 +38,24 @@ def set_post_value(req, obj, value: str, list_obj: (object | bool) = False, allo
 
 def set_post_value_batch(req, obj, values: list[str]):
     [set_post_value(req, obj, value) for value in values]
+
+def set_cookie(response, key, value, days_expire=7):
+    if days_expire is None:
+        max_age = 365 * 24 * 60 * 60  # one year
+    else:
+        max_age = days_expire * 24 * 60 * 60
+    expires = datetime.datetime.strftime(
+        datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age),
+        "%a, %d-%b-%Y %H:%M:%S GMT",
+    )
+    response.set_cookie(
+        key,
+        value,
+        max_age=max_age,
+        expires=expires,
+        domain=settings.SESSION_COOKIE_DOMAIN,
+        secure=settings.SESSION_COOKIE_SECURE or None,
+    )
 
 # -----------------------
 
@@ -369,6 +390,17 @@ def settings_profile(request):
         "author": author
     })
     
+def settings_theme(request):
+    template_name = 'old_straits_times/settings_theme.html'
+    
+    if request.method == 'POST':
+        response = render(request, template_name, {})
+        response.set_cookie('theme_color', request.POST.get('theme_color'))
+        
+        return response
+    
+    return render(request, template_name, {})
+    
 def category(request):
     template_name = 'old_straits_times/category.html'
     
@@ -380,3 +412,25 @@ def category(request):
     context['stories'] = stories[:20]
     
     return render(request, template_name, context)
+
+def simplified_story(story: Story):
+    return {
+        'pk': story.pk,
+        'genre': story.get_genre(),
+        'author': story.author.username
+    }
+
+def search(request):
+    if request.method == 'POST':
+        search_query = request.POST.get('search_query')
+        search_result = list(map(
+            simplified_story, 
+            Story.objects.filter(Q(title__icontains=search_query) | Q(genre__name__icontains=search_query)).distinct()[:8]
+            ))
+        
+        return JsonResponse({
+            "result": json.dumps(search_result)
+        }, safe=False)
+
+    template_name = 'old_straits_times/index.html'
+    return render(request, template_name, {})

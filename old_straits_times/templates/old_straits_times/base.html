@@ -77,10 +77,12 @@
                         </nav>
                     </div>
                     <div class="d-none d-xl-block">
-                        <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                            <button class="btn btn-outline-success" type="submit">Search</button>
-                          </form>
+                        <div class="d-flex" role="search">
+                            <button class="btn btn-outline-secondary text-start" data-bs-toggle="modal" data-bs-target="#searchModal" style="width: 275px;">
+                                <i class="bi bi-search"></i>
+                                Search
+                            </button>
+                        </div>
                     </div>
                     {% if request.user.is_authenticated %}
                         <div class="d-flex align-items-center">
@@ -117,4 +119,61 @@
         <!-- js-cookie javascript -->
         <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
     </body>
+
+    <!-- Search Modal -->
+    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="searchModalLabel"><i class="bi bi-search me-2"></i>Search</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <input name="search_query" id="SearchInput" type="text" class="form-control" placeholder="Search here...">
+                </div>
+                <div class="row gy-4 py-4 mx-0">
+                    <div class="col p-2 card">test</div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script>
+        document.onreadystatechange = () => {
+            if (document.readyState === "interactive") {
+                let typingTimer;                //timer identifier
+                let doneTypingInterval = 1000;  //time in ms (1 second)
+                const searchInputEl = document.getElementById('SearchInput')    
+                const csrftoken = Cookies.get('csrftoken')
+
+                const doneTyping = () => {
+                    const data = new FormData()
+
+                    data.set('search_query', searchInputEl.value)
+
+                    if (searchInputEl.value?.length >= 3) {
+                        fetch("{% url 'oldstimes:search' %}", {
+                            method: 'POST',
+                            mode: "same-origin",
+                            headers: { "X-CSRFToken": csrftoken },
+                            body: data
+                        })
+                        .then(res => res.json().then(data => {
+                            console.log(JSON.parse(data.result))
+                        }))
+                        .catch(err => console.log(err))
+                    }
+                }
+
+                searchInputEl.addEventListener('change', () => {
+                    clearTimeout(typingTimer);
+                    if (searchInputEl.value) {
+                        typingTimer = setTimeout(doneTyping, doneTypingInterval);
+                    }
+                })
+            }
+        }
+    </script>
 </html>
