@@ -8,7 +8,11 @@
     {% for reply in replies %}
         <li>
             <div class="d-flex">
-                <i class="reply-item-icon bi bi-person-circle"></i>
+                {% if comment.commenter.avatar %}
+                    <img class="reply-item-image" src="{{ comment.commenter.avatar.url }}" />
+                {% else %}
+                    <i class="reply-item-icon bi bi-person-circle"></i>
+                {% endif %}
                 <div class="mt-1">
                     <div class="d-flex align-items-baseline">
                         <a href="{% url 'oldstimes:profile' reply.commenter.username %}">
@@ -35,7 +39,11 @@
                 </div>
                 <div id="replyContainer-{{ reply.pk }}" class="d-none">
                     <div class="d-flex mt-3">
-                        <i class="reply-item-icon bi bi-person-circle"></i>
+                        {% if request.user.avatar %}
+                            <img class="reply-item-image" src="{{ request.user.avatar.url }}" />
+                        {% else %}
+                            <i class="reply-item-icon bi bi-person-circle"></i>
+                        {% endif %}
                         <form method="POST" class="w-100" onsubmit="postReply(this, '{{ reply.pk }}'); return true;">
                             <textarea name="content" id="replyContainer-{{ reply.pk }}-textarea" class="form-control" placeholder="Leave a comment here" style="height: 1rem;" required></textarea>
                             <div class="d-flex justify-content-end mt-3">

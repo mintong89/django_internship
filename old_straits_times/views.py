@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, JsonResponse
 from django.utils import timezone
 from django.urls import reverse
+from django.forms import ModelForm
 
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
@@ -308,6 +309,22 @@ def story_edit(request, story_id):
         'current_story': current_story
     })
     
+class ProfileForm(ModelForm):
+    class Meta:
+        model = Author
+        fields = [
+            'email',
+            'avatar',
+            'bio',
+            'first_name',
+            'last_name',
+            'country',
+            'social1',
+            'social2',
+            'social3',
+            'social4'
+        ]
+
 def settings_profile(request):
     template_name = 'old_straits_times/settings_profile.html'
     author = get_object_or_404(Author, pk=request.user.pk)
@@ -332,19 +349,16 @@ def settings_profile(request):
                     'error_message': "Current password is not correct!"
                 })       
         
-        set_post_value_batch(request, author, [
-            'email',
-            'bio',
-            'first_name',
-            'last_name',
-            'country',
-            'social1',
-            'social2',
-            'social3',
-            'social4'
-        ])
-        author.save()
-        
+        form = ProfileForm(request.POST, request.FILES, instance=author)
+        if form.is_valid():
+            avatar_value = request.FILES.get('avatar')
+            if not avatar_value:
+                form.instance.avatar = None
+
+            form.save()
+        else:
+            print(form.errors)
+            
         return render(request, template_name, {
             "author": author,
             'success_message': "The profile has been successfully updated."

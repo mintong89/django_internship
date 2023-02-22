@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-12 col-md-4 lg:col-3 mb-4 mb-md-0">
                 <div class="mb-4">
-                    <img class="img-thumbnail" src="https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=1024x1024&w=is&k=20&c=-mUWsTSENkugJ3qs5covpaj-bhYpxXY-v9RDpzsw504=" />
+                    <img class="img-thumbnail w-100" src="{{ author.avatar.url }}" />
                 </div>
                 {% if request.user.pk == author.pk %}
                     <div class="border rounded p-3 mb-4">

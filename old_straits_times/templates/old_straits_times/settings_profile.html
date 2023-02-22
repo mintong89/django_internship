@@ -13,7 +13,7 @@
         </div>
     {% endif %}
 
-    <form method="POST" onsubmit="return submitChange(this)">
+    <form method="POST" onsubmit="return submitChange(this)" enctype="multipart/form-data">
         {% csrf_token %}
 
         <h3>Account Info</h3>
@@ -45,6 +45,18 @@
         </div>
         <h3>Personal Info</h3>
         <div class="border rounded p-4 mb-4">
+            <div class="mb-4">
+                <label class="form-label">Avatar</label>
+                <div class="pb-3">
+                    <img id="avatarImage" style="width: 250px; height: 250px;" src="{% if author.avatar %}{{ author.avatar.url }}{% else %}https://via.placeholder.com/500{% endif %}" alt="Avatar" />
+                </div>
+                <div>
+                    <input class="d-none" name="avatar" type="file" id="avatarInput" accept="image/*" value="{% if author.avatar %}{{ author.avatar }}{% else %}{% endif %}" />
+                    <input type="button" class="btn btn-outline-primary btn-sm" value="Browse..." onclick="this.previousElementSibling.click();" />
+                    <input type="button" class="btn btn-outline-secondary btn-sm" value="Clear" onclick="removeAvatarInput();" />
+                    <p class="fs-7 mt-1">*Image will resized into 500x500.</p>
+                </div>
+            </div>
             <div class="mb-4">
                 <label class="form-label">Bio</label>
                 <input name="bio" id='bioInput' type='hidden' value="{{ author.bio }}" />
@@ -110,6 +122,20 @@
         }
     </script>
     <script>
+        const avatarInputEl = document.getElementById('avatarInput')
+        const avatarImageEl = document.getElementById('avatarImage')
+        avatarInputEl.addEventListener('change', (e) => {
+            const [file] = avatarInputEl.files
+            if (file) {
+                avatarImageEl.src = URL.createObjectURL(file)
+            }
+        })
+
+        const removeAvatarInput = () => {
+            avatarInputEl.value = ''
+            avatarImageEl.src = 'https://via.placeholder.com/500'
+        }
+
         const selectCountryEl = document.getElementById('country')
         const countrySelected = document.getElementById('countrySelected')?.value
     

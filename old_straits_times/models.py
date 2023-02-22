@@ -3,18 +3,43 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxLengthValidator
 from django.db.models import Q
 from ckeditor.fields import RichTextField
+from django_resized import ResizedImageField
 
 import re
+import os
+from uuid import uuid4
+
+from django.utils.deconstruct import deconstructible
+
+@deconstructible
+class PathAndRename(object):
+
+    def __init__(self, sub_path):
+        self.path = sub_path
+
+    def __call__(self, instance, filename):
+        ext = filename.split('.')[-1]
+        # set filename as random string
+        filename = '{}.{}'.format(uuid4().hex, ext)
+        # return the whole path to the file
+        return os.path.join(self.path, filename)
+
+path_and_rename = PathAndRename("old_straits_times/avatars")
 
 # Create your models here.
 class Author(AbstractUser):
     bio = RichTextField()
-    country = models.CharField(max_length=60, default="")
+    country = models.CharField(max_length=60, default="", blank=True, null=True)
+    avatar = ResizedImageField(size=[400,400],
+                               default="avatars/none/default.png",
+                               upload_to=path_and_rename,
+                               null=True,
+                               blank=True)
     
-    social1 = models.CharField(max_length=120, default="")
-    social2 = models.CharField(max_length=120, default="")
-    social3 = models.CharField(max_length=120, default="")
-    social4 = models.CharField(max_length=120, default="")
+    social1 = models.CharField(max_length=120, default="", blank=True, null=True)
+    social2 = models.CharField(max_length=120, default="", blank=True, null=True)
+    social3 = models.CharField(max_length=120, default="", blank=True, null=True)
+    social4 = models.CharField(max_length=120, default="", blank=True, null=True)
     
     def stories(self):
         return Story.objects.filter(author=self.pk).order_by('-date_published')

@@ -105,6 +105,13 @@ a > .card:hover {
     align-items: center;
 }
 
+.comment-item-image {
+    width: 60px;
+    height: 60px;
+    padding: .5rem;
+    padding-top: 0;
+}
+
 .comment-item-icon {
     font-size: 2.75rem;
     padding: .5rem;
@@ -118,6 +125,12 @@ a > .card:hover {
 
 .comment-item-thumb > i {
     font-size: 1.25rem;
+}
+
+.reply-item-image {
+    width: 36px;
+    height: 36px;
+    padding: 0 .5rem 0 .25rem;
 }
 
 .reply-item-icon {

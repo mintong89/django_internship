@@ -55,7 +55,11 @@
                         {% csrf_token %}
                         <input type="hidden" name="post_type" value="post_comment" />
                         <div class="d-flex mb-2">
-                            <i class="comment-item-icon bi bi-person-circle"></i>
+                            {% if request.user.avatar %}
+                                <img class="comment-item-image" src="{{ request.user.avatar.url }}" />
+                            {% else %}
+                                <i class="comment-item-icon bi bi-person-circle"></i>
+                            {% endif %}
                             <textarea name="content" class="form-control" placeholder="Leave a comment here" style="height: 150px;" ></textarea>
                         </div>
                         <div class="d-flex justify-content-end">
@@ -69,7 +73,11 @@
                 {% for comment in story.comments %}
                     <li class="comment-item mb-4">
                         <div class="d-flex">
-                            <i class="comment-item-icon bi bi-person-circle"></i>
+                            {% if comment.commenter.avatar %}
+                                <img class="comment-item-image" src="{{ comment.commenter.avatar.url }}" />
+                            {% else %}
+                                <i class="comment-item-icon bi bi-person-circle"></i>
+                            {% endif %}
                             <div class="comment-item-text">
                                 <div class="d-flex align-items-baseline">
                                     <a href="{% url 'oldstimes:profile' comment.commenter.username %}">
@@ -94,7 +102,11 @@
                                     </div>
                                     <div id="replyContainer-{{ comment.pk }}" class="d-none">
                                         <div class="d-flex mt-3">
-                                            <i class="reply-item-icon bi bi-person-circle"></i>
+                                            {% if request.user.avatar %}
+                                                <img class="reply-item-image" src="{{ request.user.avatar.url }}" />
+                                            {% else %}
+                                                <i class="reply-item-icon bi bi-person-circle"></i>
+                                            {% endif %}
                                             <form method="POST" class="w-100" onsubmit="postReply(this, '{{ comment.pk }}'); return true;">
                                                 <textarea name="content" id="replyContainer-{{ comment.pk }}-textarea" class="form-control" placeholder="Leave a comment here" style="height: 1rem;" required></textarea>
                                                 <div class="d-flex justify-content-end mt-3">
