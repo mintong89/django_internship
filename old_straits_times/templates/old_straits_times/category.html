@@ -4,9 +4,9 @@
     <div class="container">
         <h1>Category</h1>
         <form>
-            <ul class="list-unstyled category-select-genre-list d-flex">
+            <ul class="list-unstyled category-select-genre-list d-flex flex-wrap">
                 {% for genre in all_genre %}
-                    <li>
+                    <li class="mb-2">
                         <label category-genre-item class="btn btn-sm rounded-pill fs-7">{{ genre.name }}</label>
                         <input class="d-none" name="genre" type="checkbox" value="{{ genre.pk }}" />
                     </li>
@@ -17,7 +17,7 @@
     
         <div class="row gy-4 gx-2 category-stories">
             {% for story in stories %}
-                <div class="col-3">
+                <div class="col-6 col-lg-3">
                     <a class="text-muted text-decoration-none" href="{% url 'oldstimes:story' story.id %}">
                         <div class="card p-2">
                             <h5 class="title">{{ story.title }}</h5>

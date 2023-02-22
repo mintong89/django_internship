@@ -2,7 +2,23 @@
 
 {% block content %}
       <div class="row gx-8">
-            <div class="col">
+            <div class="col-12 col-md-5 col-lg-4 col-xl-3 order-md-2">
+                  <h6>Try out other stories...</h6>
+                  <div class="row mb-4 mb-md-0 align-items-stretch gy-2">
+                        {% for story in random_stories %}
+                              <a class="text-muted text-decoration-none col-6 col-md-12" href="{% url 'oldstimes:story' story.id %}">
+                                    <div class="card p-2 h-100 d-flex flex-column justify-content-between">
+                                          <p class="mb-0">{{ story.title }}</p>
+                                          <div class="fs-7.5 d-flex justify-content-between">
+                                                <p class="mb-0">{{ story.get_genre }}</p>
+                                                <p class="mb-0">{{ story.author.username }}</p>
+                                          </div>
+                                    </div>
+                              </a>
+                        {% endfor %}
+                  </div>
+            </div>
+            <div class="col order-md-1">
                   <h2>Trending</h2>
                   <div class="row row-cols-1 gx-0 gy-4">
                         {% for story in trending_stories %}
@@ -21,22 +37,6 @@
                                                             </p>
                                                       </div>
                                                 </div>
-                                          </div>
-                                    </div>
-                              </a>
-                        {% endfor %}
-                  </div>
-            </div>
-            <div class="sidebar">
-                  <h6>Try out other stories...</h6>
-                  <div>
-                        {% for story in random_stories %}
-                              <a class="text-muted text-decoration-none" href="{% url 'oldstimes:story' story.id %}">
-                                    <div class="card p-2 mb-2">
-                                          <p class="mb-0">{{ story.title }}</p>
-                                          <div class="fs-7.5 d-flex justify-content-between">
-                                                <p class="mb-0">{{ story.get_genre }}</p>
-                                                <p class="mb-0">{{ story.author.username }}</p>
                                           </div>
                                     </div>
                               </a>

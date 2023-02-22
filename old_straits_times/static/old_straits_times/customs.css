@@ -132,3 +132,7 @@ a > .card:hover {
 .reply-item-thumb > i {
     font-size: 1.25rem;
 }
+
+.password-input {
+    width: 190px;
+}
