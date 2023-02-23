@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="{{ request.COOKIES.theme_color|default:'dark' }}">
+<html lang="en" data-bs-theme="{{ request.COOKIES.theme_color|default:'light' }}">
     <head>
         <!-- required meta tags -->
         <meta charset="utf-8">
@@ -30,6 +30,10 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="bi" fill="currentColor" viewBox="0 0 16 16">
                                         <path fill-rule="evenodd" d="M2.5 11.5A.5.5 0 0 1 3 11h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 3h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"></path>
                                       </svg>
+                                </button>
+
+                                <button class="btn btn-body text-primary-emphasis p-1 px-2" type="button" data-bs-toggle="modal" data-bs-target="#searchModal">
+                                    <i class="bi bi-search"></i>
                                 </button>
 
                                 <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
@@ -90,7 +94,7 @@
                             <a class="pe-3" href="{% url 'oldstimes:settings_profile' %}">
                                 Settings
                             </a>
-                            <a href="{% url 'oldstimes:auth_logout' %}">
+                            <a class="d-none d-sm-block" href="{% url 'oldstimes:auth_logout' %}">
                                 <button class="btn btn-outline-primary">Sign Out</button>
                             </a>
                         </div>
@@ -128,52 +132,88 @@
                 <h1 class="modal-title fs-5" id="searchModalLabel"><i class="bi bi-search me-2"></i>Search</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body pb-0">
                 <div class="input-group">
-                    <input name="search_query" id="SearchInput" type="text" class="form-control" placeholder="Search here...">
+                    <input name="search_query" id="searchInput" type="text" class="form-control" placeholder="Search here...">
                 </div>
-                <div class="row gy-4 py-4 mx-0">
-                    <div class="col p-2 card">test</div>
-                </div>
+                <div id='resultPanel' class="row gy-3 py-3 mx-0"></div>
             </div>
         </div>
         </div>
     </div>
 
     <script>
-        document.onreadystatechange = () => {
-            if (document.readyState === "interactive") {
-                let typingTimer;                //timer identifier
-                let doneTypingInterval = 1000;  //time in ms (1 second)
-                const searchInputEl = document.getElementById('SearchInput')    
-                const csrftoken = Cookies.get('csrftoken')
+        const searchItem = ({pk, title, genre, author}) => `
+        <a class="p-0 text-muted text-decoration-none" href="/oldstimes/story/${pk}">
+            <div class="col p-2 card">
+                <h6 class="mb-3">${title}</h6>
+                <div class="d-flex justify-content-between">
+                    <p class="fs-7 mb-0">${genre}</p>
+                    <p class="fs-7 mb-0">${author}</p>
+                </div>
+            </div>
+        </a>
+        `
 
-                const doneTyping = () => {
-                    const data = new FormData()
+        const noResult = `
+        <div class="py-2">
+            <div class="text-center mb-3">
+                <svg width="40" height="40" viewBox="0 0 20 20" fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 4.8c2 3 1.7 7-1 9.7h0l4.3 4.3-4.3-4.3a7.8 7.8 0 01-9.8 1m-2.2-2.2A7.8 7.8 0 0113.2 2.4M2 18L18 2"></path></svg>
+            </div>
+            <h6 class="text-center">No result for the search...</h6>
+        </div>
+        `
 
-                    data.set('search_query', searchInputEl.value)
+        let typingTimer;                //timer identifier
+        let doneTypingInterval = 1000;  //time in ms (1 second)
+        const searchInputEl = document.getElementById('searchInput')
+        const resultPanelEl = document.getElementById('resultPanel')   
+        const csrftoken = Cookies.get('csrftoken')
 
-                    if (searchInputEl.value?.length >= 3) {
-                        fetch("{% url 'oldstimes:search' %}", {
-                            method: 'POST',
-                            mode: "same-origin",
-                            headers: { "X-CSRFToken": csrftoken },
-                            body: data
-                        })
-                        .then(res => res.json().then(data => {
-                            console.log(JSON.parse(data.result))
-                        }))
-                        .catch(err => console.log(err))
-                    }
-                }
+        const doneTyping = () => {
+            const data = new FormData()
 
-                searchInputEl.addEventListener('change', () => {
-                    clearTimeout(typingTimer);
-                    if (searchInputEl.value) {
-                        typingTimer = setTimeout(doneTyping, doneTypingInterval);
-                    }
+            data.set('search_query', searchInputEl.value)
+
+            if (searchInputEl.value?.length >= 3) {
+                fetch("{% url 'oldstimes:search' %}", {
+                    method: 'POST',
+                    mode: "same-origin",
+                    headers: { "X-CSRFToken": csrftoken },
+                    body: data
                 })
+                .then(res => res.json().then(data => {
+                    const result = JSON.parse(data.result)
+
+                    let resultEl = ''
+                    if (result instanceof Array && result.length != 0) {
+                        result.map(value => resultEl += searchItem({
+                            pk: value.pk,
+                            title: value.title,
+                            genre: value.genre,
+                            author: value.author
+                        }))
+                    } else {
+                        resultEl = noResult
+                    }
+                    resultPanelEl.innerHTML = resultEl
+                }))
+                .catch(err => console.log(err))
+            } else {
+                resultPanelEl.innerHTML = noResult
             }
         }
+
+        searchInputEl.addEventListener('keyup', () => {
+            clearTimeout(typingTimer);
+            if (searchInputEl.value) {
+                typingTimer = setTimeout(doneTyping, doneTypingInterval);
+            }
+        })
+
+        const searchModalEl = document.getElementById('searchModal')
+        searchModalEl.addEventListener('shown.bs.modal', event => {
+            searchInputEl.focus()
+        })
     </script>
 </html>

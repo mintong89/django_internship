@@ -372,8 +372,8 @@ def settings_profile(request):
         
         form = ProfileForm(request.POST, request.FILES, instance=author)
         if form.is_valid():
-            avatar_value = request.FILES.get('avatar')
-            if not avatar_value:
+            avatar_existing = request.POST.get('avatar_existing')
+            if avatar_existing != 'true':
                 form.instance.avatar = None
 
             form.save()
@@ -394,8 +394,10 @@ def settings_theme(request):
     template_name = 'old_straits_times/settings_theme.html'
     
     if request.method == 'POST':
+        theme_color = request.POST.get('theme_color')
+        request.COOKIES['theme_color'] = theme_color
         response = render(request, template_name, {})
-        response.set_cookie('theme_color', request.POST.get('theme_color'))
+        response.set_cookie('theme_color', theme_color)
         
         return response
     
@@ -416,6 +418,7 @@ def category(request):
 def simplified_story(story: Story):
     return {
         'pk': story.pk,
+        'title': story.title,
         'genre': story.get_genre(),
         'author': story.author.username
     }

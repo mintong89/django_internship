@@ -31,28 +31,24 @@
     </div>
 
     <script>
-        document.onreadystatechange = () => {
-            if (document.readyState === "interactive" ) {
-                const genreItems = document.querySelectorAll('[category-genre-item]')
+        const genreItems = document.querySelectorAll('[category-genre-item]')
 
-                const params = (new URL(document.location)).searchParams;
-                const selectedGenre = params.getAll('genre');
+        const params = (new URL(document.location)).searchParams;
+        const selectedGenre = params.getAll('genre');
 
-                genreItems.forEach(genreEl => {
-                    const inputEl = genreEl.nextElementSibling
-                    if (selectedGenre.includes(inputEl.value)) {
-                        genreEl.classList.add('btn-primary')
-                        inputEl.checked = true
-                    } else {
-                        genreEl.classList.add('btn-outline-primary')
-                    }
-
-                    genreEl.addEventListener('click', (e) => {
-                        inputEl.checked = !inputEl.checked
-                        document.getElementById('submitGenre').click()
-                    })
-                })
+        genreItems.forEach(genreEl => {
+            const inputEl = genreEl.nextElementSibling
+            if (selectedGenre.includes(inputEl.value)) {
+                genreEl.classList.add('btn-primary')
+                inputEl.checked = true
+            } else {
+                genreEl.classList.add('btn-outline-primary')
             }
-        }
+
+            genreEl.addEventListener('click', (e) => {
+                inputEl.checked = !inputEl.checked
+                document.getElementById('submitGenre').click()
+            })
+        })
     </script>
 {% endblock content %}

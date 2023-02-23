@@ -8,12 +8,12 @@
                 <ul class="list-unstyled mb-0">
                     <a href="{% url 'oldstimes:settings_profile' %}"><li>Profile</li></a>
                     <a href="{% url 'oldstimes:settings_theme' %}"><li>Theme Appearance</li></a>
-                    <a href="{% url 'oldstimes:settings_theme' %}"><li>Manage Stories</li></a>
+                    <a><li>Manage Stories</li></a>
                 </ul>
                 <ul class="list-unstyled mb-0">
                     <a><li>Notifications</li></a>
                     <a><li>Privacy and Security</li></a>
-                    <a><li>Log out</li></a>
+                    <a href="{% url 'oldstimes:auth_logout' %}"><li>Sign out</li></a>
                 </ul>
             </div>
         </div>
