@@ -23,9 +23,12 @@ class StoriesAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.date_last_updated = timezone.now()
         super().save_model(request, obj, form, change)
+        
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'commenter', 'date_published')
 
 # Register your models here.
 admin.site.register(Author, UserAdmin)
 admin.site.register(Genre, GenreAdmin)
 admin.site.register(Story, StoriesAdmin)
-admin.site.register(Comment)
+admin.site.register(Comment, CommentAdmin)
