@@ -39,10 +39,10 @@
         genreItems.forEach(genreEl => {
             const inputEl = genreEl.nextElementSibling
             if (selectedGenre.includes(inputEl.value)) {
-                genreEl.classList.add('btn-primary')
+                genreEl.classList.add('btn-info')
                 inputEl.checked = true
             } else {
-                genreEl.classList.add('btn-outline-primary')
+                genreEl.classList.add('btn-outline-info')
             }
 
             genreEl.addEventListener('click', (e) => {

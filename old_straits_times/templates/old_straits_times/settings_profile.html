@@ -50,7 +50,7 @@
                 <div class="pb-3 d-flex">
                     <div class="border rounded p-2">
                         <input type='hidden' id="avatarExisting" name="avatar_existing" value="{% if author.avatar %}true{% else %}false{% endif %}" />
-                        <img class="rounded-circle border border-2" id="avatarImage" style="width: 250px; height: 250px;" src="{% if author.avatar %}{{ author.avatar.url }}{% else %}https://via.placeholder.com/500{% endif %}" alt="Avatar" />
+                        <img class="rounded-circle border border-3 border-body" id="avatarImage" style="width: 250px; height: 250px;" src="{% if author.avatar %}{{ author.avatar.url }}{% else %}https://via.placeholder.com/500{% endif %}" alt="Avatar" />
                     </div>
                 </div>
                 <div>

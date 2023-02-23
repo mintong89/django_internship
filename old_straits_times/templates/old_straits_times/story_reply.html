@@ -10,7 +10,7 @@
             <div class="d-flex">
                 <div class="reply-item-image">
                     {% if reply.commenter.avatar %}
-                        <img class="border border-2 border-dark rounded-circle w-100 h-100 object-fit-fill" src="{{ reply.commenter.avatar.url }}" />
+                        <img class="border border-3 border-body rounded-circle w-100 h-100 object-fit-fill" src="{{ reply.commenter.avatar.url }}" />
                     {% else %}
                         <i class="reply-item-icon bi bi-person-circle"></i>
                     {% endif %}
@@ -43,7 +43,7 @@
                     <div class="d-flex mt-3">
                         <div class="reply-item-image">
                             {% if request.user.avatar %}
-                                <img class="border border-2 border-dark rounded-circle w-100 h-100 object-fit-fill" src="{{ request.user.avatar.url }}" />
+                                <img class="border border-3 border-body rounded-circle w-100 h-100 object-fit-fill" src="{{ request.user.avatar.url }}" />
                             {% else %}
                                 <i class="reply-item-icon bi bi-person-circle"></i>
                             {% endif %}

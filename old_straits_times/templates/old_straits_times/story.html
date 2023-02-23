@@ -57,7 +57,7 @@
                         <div class="d-flex mb-2">
                             <div class="comment-item-image">
                                 {% if request.user.avatar %}
-                                    <img class="border border-2 border-dark rounded-circle w-100 h-100 object-fit-fill" src="{{ request.user.avatar.url }}" />
+                                    <img class="border border-3 border-body rounded-circle w-100 h-100 object-fit-fill" src="{{ request.user.avatar.url }}" />
                                 {% else %}
                                     <i class="comment-item-icon bi bi-person-circle"></i>
                                 {% endif %}
@@ -77,7 +77,7 @@
                         <div class="d-flex">
                             <div class="comment-item-image">
                                 {% if comment.commenter.avatar %}
-                                    <img class="border border-2 border-dark rounded-circle w-100 h-100 object-fit-fill" src="{{ comment.commenter.avatar.url }}" />
+                                    <img class="border border-3 border-body rounded-circle w-100 h-100 object-fit-fill" src="{{ comment.commenter.avatar.url }}" />
                                 {% else %}
                                     <i class="comment-item-icon bi bi-person-circle"></i>
                                 {% endif %}

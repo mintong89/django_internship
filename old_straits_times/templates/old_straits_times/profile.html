@@ -7,7 +7,7 @@
             <div class="col-12 col-md-4 lg:col-3 mb-4 mb-md-0">
                 <div class="mb-4 border rounded ratio ratio-1x1">
                     <div class="p-2">
-                        <img class="object-fit-fill w-100 h-100 rounded-circle" src="{{ author.avatar.url }}" />
+                        <img class="object-fit-fill w-100 h-100 rounded-circle border border-4 border-body" src="{{ author.avatar.url }}" />
                     </div>
                 </div>
                 {% if request.user.pk == author.pk %}
