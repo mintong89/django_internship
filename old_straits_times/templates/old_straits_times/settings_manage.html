@@ -15,22 +15,30 @@
             {% for story in stories %}
                 <tr id="story-{{ story.pk }}">
                     <td>{{ story.pk }}</td>
-                    <td scope="row">{{ story.title }}</td>
+                    <td scope="row">
+                        <a href="{% url 'oldstimes:story' story.pk %}">{{ story.title }}</a>
+                    </td>
                     <td>{{ story.date_published }}</td>
                     <td>
                         <a href="{% url 'oldstimes:story_edit' story.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteStory({{ story.pk }})">Delete</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="changeStory({{ story.pk }}, 'delete')">Delete</button>
+                        <button id="private-{{ story.pk }}" class="btn btn-sm btn-outline-warning {% if story.is_private %}d-none{% endif %}" onclick="changeStory({{ story.pk }}, 'private')">Private</button>
+                        <button id="public-{{ story.pk }}" class="btn btn-sm btn-outline-info {% if not story.is_private %}d-none{% endif %}" onclick="changeStory({{ story.pk }}, 'public')">Public</button>
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
     <script>
-        const deleteStory = (storyPK) => {
-            if (confirm('Are you sure you want to delete the story?')) {
-                const data = new FormData()
-                data.set('pk', storyPK)
-    
+        const changeStory = (storyPK, type) => {
+            const privateEl = document.getElementById(`private-${storyPK}`)
+            const publicEl = document.getElementById(`public-${storyPK}`)
+
+            const data = new FormData()
+            data.set('pk', storyPK)
+            data.set('post_type', type)
+
+            if (confirm(`Are you sure you want to ${type} the story?`)) {
                 fetch("{% url 'oldstimes:settings_manage' %}", {
                     method: 'POST',
                     mode: "same-origin",
@@ -38,7 +46,17 @@
                     body: data
                 })
                 .then(res => {
-                    document.getElementById(`story-${storyPK}`).remove()
+                    ({
+                        'delete': () => document.getElementById(`story-${storyPK}`).remove(),
+                        'private': () => {
+                            privateEl.classList.add('d-none')
+                            publicEl.classList.remove('d-none')
+                        },
+                        'public': () => {
+                            publicEl.classList.add('d-none')
+                            privateEl.classList.remove('d-none')
+                        },
+                    }[type]())
                 })
                 .catch(err => console.log(err))
             }

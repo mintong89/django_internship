@@ -10,7 +10,7 @@ class GenreAdmin(admin.ModelAdmin):
 class StoriesAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {
-            'fields': ['title', 'author', 'genre', 'abstract', 'content']
+            'fields': ['title', 'author', 'genre', 'abstract', 'content', 'is_private']
         }),
         ('Date and Time', {
             'fields': ['date_published', 'date_last_updated']
@@ -18,7 +18,7 @@ class StoriesAdmin(admin.ModelAdmin):
     ]
     
     readonly_fields = ('date_published', 'date_last_updated')
-    list_display = ('title', 'author', 'get_genre')
+    list_display = ('title', 'author', 'get_genre', 'is_private')
     
     def save_model(self, request, obj, form, change):
         obj.date_last_updated = timezone.now()

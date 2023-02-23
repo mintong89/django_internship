@@ -1,8 +1,8 @@
 {% extends './settings_base.html' %}
 
 {% block sub-content %}
+    <h3>Theme Settings</h3>
     <div class="card p-4">
-        <h2>Set theme</h2>
         <form method="POST">
             {% csrf_token %}
             <select name="theme_color" class="form-select" onchange="document.getElementById('submitTheme').click();">

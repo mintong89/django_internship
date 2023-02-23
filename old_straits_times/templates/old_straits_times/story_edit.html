@@ -34,6 +34,11 @@
                 <div id="ckContent"></div>
             </div>
 
+            <div class="mb-4">
+                <label for="is_private" class="form-label">Is private?</label>
+                <input class="form-check-input" type="checkbox" name="is_private" {% if current_story.is_private %}checked{% endif %} />
+            </div>
+
             <div class="d-flex justify-content-between">
                 <button class="btn btn-secondary" onclick="history.back()">Back</button>
                 <div>

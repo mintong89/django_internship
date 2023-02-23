@@ -62,7 +62,7 @@ def set_cookie(response, key, value, days_expire=7):
 def index(request):
     template_name = 'old_straits_times/index.html'
     
-    trending_stories = Story.objects.order_by('-views_total')[:5]
+    trending_stories = Story.objects.filter(is_private=False).order_by('-views_total')[:5]
     
     pks = Story.objects.values_list('pk', flat=True)
     random_pks = []
@@ -73,7 +73,7 @@ def index(request):
             random_pk = choice(pks)
             if random_pk not in random_pks:
                 random_pks.append(random_pk)
-    random_stories = Story.objects.filter(id__in=random_pks).order_by('date_last_updated')
+    random_stories = Story.objects.filter(id__in=random_pks, is_private=False).order_by('date_last_updated')
     
     return render(request, template_name, {
         'trending_stories': trending_stories,
@@ -271,6 +271,7 @@ def story_post(request):
         genre = request.POST.getlist('genre')
         abstract = request.POST.get('abstract')
         content = request.POST.get('content')
+        is_private = request.POST.get('is_private')
         date_published = timezone.now()
         date_last_updated = timezone.now()
         
@@ -282,7 +283,8 @@ def story_post(request):
             abstract=abstract,
             content=content,
             date_published=date_published,
-            date_last_updated=date_last_updated
+            date_last_updated=date_last_updated,
+            is_private=not not is_private
         )
         new_story.save()
         new_story.genre.set(genre_pk)
@@ -311,6 +313,7 @@ def story_edit(request, story_id):
         genre = request.POST.getlist('genre')
         abstract = request.POST.get('abstract')
         content = request.POST.get('content')
+        is_private = request.POST.get('is_private')
         date_last_updated = timezone.now()
         
         genre_pk = list(map(lambda x: Genre.objects.get(name=x), genre))
@@ -319,6 +322,7 @@ def story_edit(request, story_id):
         current_story.abstract = abstract;
         current_story.content = content;
         current_story.date_last_updated = date_last_updated
+        current_story.is_private = not not is_private
         current_story.save()
         current_story.genre.set(genre_pk)
         return HttpResponseRedirect(reverse('oldstimes:story', kwargs={'story_id': current_story.pk}))
@@ -407,14 +411,24 @@ def settings_manage(request):
     template_name = 'old_straits_times/settings_manage.html'
     
     if request.method == 'POST':
-        delete_pk = request.POST.get('pk')
+        post_type = request.POST.get('post_type')
+        pk = request.POST.get('pk')
+        story = Story.objects.get(pk=pk)
         
-        if delete_pk:
-            Story.objects.filter(pk=delete_pk).delete()
-            
-            return JsonResponse({
-                'message': f'Deleted Story {delete_pk} from table!'
-            })
+        if pk:
+            if post_type == 'private' or post_type == 'public':
+                story.is_private = post_type == 'private'
+                story.save() 
+                
+                return JsonResponse({
+                    'message': f'Published or Privated Story {pk} from table!'
+                })
+            elif post_type == 'delete':
+                story.delete()
+                
+                return JsonResponse({
+                    'message': f'Deleted Story {pk} from table!'
+                })
     
     stories = Story.objects.filter(author=request.user).order_by('-date_published')
     return render(request, template_name, {
@@ -446,7 +460,11 @@ def search(request):
         search_query = request.POST.get('search_query')
         search_result = list(map(
             simplified_story, 
-            Story.objects.filter(Q(title__icontains=search_query) | Q(genre__name__icontains=search_query)).distinct()[:8]
+            Story.objects.filter(
+                (Q(title__icontains=search_query) |
+                Q(genre__name__icontains=search_query)) &
+                Q(is_private=False)
+                ).distinct()[:8],
             ))
         
         return JsonResponse({

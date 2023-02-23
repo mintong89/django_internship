@@ -67,8 +67,8 @@ class Story(models.Model):
                                    validators=[MaxLengthValidator(250)])
     date_published = models.DateTimeField('date published', auto_now_add=True)
     date_last_updated = models.DateTimeField('date last updated')
-    views_in_week = models.IntegerField(default=0)
     views_total = models.IntegerField(default=0)
+    is_private = models.BooleanField(default=False)
     content = RichTextField()
     
     def comments(self):
