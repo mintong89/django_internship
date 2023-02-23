@@ -442,7 +442,7 @@ def category(request):
     context = { 'all_genre': all_genre }
     
     selectedGenre = request.GET.getlist('genre')
-    stories = Story.objects.filter(genre__in=selectedGenre).distinct() if selectedGenre else Story.objects.all()
+    stories = Story.objects.filter(genre__in=selectedGenre, is_private=False).distinct() if selectedGenre else Story.objects.filter(is_private=False)
     context['stories'] = stories[:20]
     
     return render(request, template_name, context)
