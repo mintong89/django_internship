@@ -12,6 +12,7 @@ urlpatterns = [
     path('profile/<slug:author_username>', views.profile, name='profile'),
     path('post', views.story_post, name='story_post'),
     path('settings/profile', views.settings_profile, name='settings_profile'),
+    path('settings/manage', views.settings_manage, name='settings_manage'),
     path('settings/theme', views.settings_theme, name='settings_theme'),
     path('category', views.category, name='category'),
     path('search', views.search, name='search')

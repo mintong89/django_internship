@@ -402,6 +402,24 @@ def settings_theme(request):
         return response
     
     return render(request, template_name, {})
+
+def settings_manage(request):
+    template_name = 'old_straits_times/settings_manage.html'
+    
+    if request.method == 'POST':
+        delete_pk = request.POST.get('pk')
+        
+        if delete_pk:
+            Story.objects.filter(pk=delete_pk).delete()
+            
+            return JsonResponse({
+                'message': f'Deleted Story {delete_pk} from table!'
+            })
+    
+    stories = Story.objects.filter(author=request.user).order_by('-date_published')
+    return render(request, template_name, {
+        'stories': stories
+    })
     
 def category(request):
     template_name = 'old_straits_times/category.html'

@@ -1,0 +1,47 @@
+{% extends './settings_base.html' %}
+
+{% block sub-content %}
+    <h3>Manage your stories</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Story ID</th>
+                <th scope="col">Title</th>
+                <th scope="col">Publish Date</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for story in stories %}
+                <tr id="story-{{ story.pk }}">
+                    <td>{{ story.pk }}</td>
+                    <td scope="row">{{ story.title }}</td>
+                    <td>{{ story.date_published }}</td>
+                    <td>
+                        <a href="{% url 'oldstimes:story_edit' story.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteStory({{ story.pk }})">Delete</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        const deleteStory = (storyPK) => {
+            if (confirm('Are you sure you want to delete the story?')) {
+                const data = new FormData()
+                data.set('pk', storyPK)
+    
+                fetch("{% url 'oldstimes:settings_manage' %}", {
+                    method: 'POST',
+                    mode: "same-origin",
+                    headers: { "X-CSRFToken": csrftoken },
+                    body: data
+                })
+                .then(res => {
+                    document.getElementById(`story-${storyPK}`).remove()
+                })
+                .catch(err => console.log(err))
+            }
+        }
+    </script>
+{% endblock sub-content %}
