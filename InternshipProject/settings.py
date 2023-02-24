@@ -40,8 +40,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ckeditor',
-    'sass_processor'
+    'sass_processor',
 ]
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'sass_processor.finders.CssFinder',
+]
+
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -129,6 +139,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "old_straits_times.Author"
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+SASS_PROCESSOR_ROOT = STATIC_ROOT
 
 LOGGING = {
     'version': 1,

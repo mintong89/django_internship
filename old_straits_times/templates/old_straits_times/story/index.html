@@ -1,4 +1,4 @@
-{% extends './base.html' %}
+{% extends '../base.html' %}
 
 {% block content %}
     {% if not story.is_private or story.author.pk == request.user.pk %}

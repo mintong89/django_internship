@@ -9,35 +9,13 @@ from django.urls import reverse
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 
-from .models import ProfileForm, Story, Genre, Author, Comment
+from .models import ProfileForm, Story, Genre, Author, Comment, StoryForm
 
 from random import choice
 import re
 from django.db.models import Q
 
 # Create your views here.
-
-# batching set value for posting
-def set_post_value(req, obj, value: str, list_obj: (object | bool) = False, allow_empty = True):
-    if list_obj:
-        result = req.POST.getlist(value)
-    else:
-        result = req.POST.get(value)
-    
-    if result and not allow_empty:
-        return False
-    
-    if list_obj:
-        result = req.POST.getlist(value)
-        return list(map(lambda x: list_obj.objects.get(name=x), result))
-    else:
-        setattr(obj, value, result)
-    
-    return True
-
-def set_post_value_batch(req, obj, values: list[str]):
-    [set_post_value(req, obj, value) for value in values]
-
 def set_cookie(response, key, value, days_expire=7):
     if days_expire is None:
         max_age = 365 * 24 * 60 * 60  # one year
@@ -81,7 +59,7 @@ def index(request):
     
 def story(request, story_id):
     story = get_object_or_404(Story, pk=story_id)
-    template_name = 'old_straits_times/story.html'
+    template_name = 'old_straits_times/story/index.html'
     
     # add a view count for each user enter the page
     if story and story.author.pk != request.user.pk:
@@ -157,7 +135,7 @@ def story(request, story_id):
     })
     
 def auth_login(request):
-    template_name = 'old_straits_times/login.html'
+    template_name = 'old_straits_times/auth/login.html'
     
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('oldstimes:index'))
@@ -188,7 +166,7 @@ def auth_logout(request):
     return HttpResponseRedirect(reverse('oldstimes:index'))
 
 def register(request):
-    template_name = 'old_straits_times/register.html'
+    template_name = 'old_straits_times/auth/register.html'
     
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('oldstimes:index'))
@@ -263,33 +241,23 @@ def profile(request, author_username):
 
 def story_post(request):
     all_genre = Genre.objects.all()
-    template_name = 'old_straits_times/story_post.html'
+    template_name = 'old_straits_times/story/post.html'
     
     if request.method == 'POST':
-        title = request.POST.get('title')
-        genre = request.POST.getlist('genre')
-        abstract = request.POST.get('abstract')
-        content = request.POST.get('content')
-        is_private = request.POST.get('is_private')
-        date_published = timezone.now()
-        date_last_updated = timezone.now()
-        
-        genre_pk = list(map(lambda x: Genre.objects.get(name=x), genre))
-        
-        new_story = Story(
-            title=title,
-            author=Author.objects.get(pk=request.user.pk),
-            abstract=abstract,
-            content=content,
-            date_published=date_published,
-            date_last_updated=date_last_updated,
-            is_private=not not is_private
-        )
-        new_story.save()
-        new_story.genre.set(genre_pk)
-        return HttpResponseRedirect(reverse('oldstimes:story', kwargs={'story_id': new_story.pk}))
-        
-        
+        form = StoryForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            form.cleaned_data['author'] = Author.objects.get(pk=request.user.pk)
+            form.cleaned_data['date_published'] = timezone.now()
+            form.cleaned_data['date_last_updated'] = timezone.now()
+
+            genre = request.POST.getlist('genre_raw')
+            genre_pk = list(map(lambda x: Genre.objects.get(name=x), genre))
+            
+            new_story = form.save()
+            new_story.genre.set(genre_pk)
+
+            return HttpResponseRedirect(reverse('oldstimes:story', kwargs={'story_id': new_story.pk}))
     
     return render(request, template_name, {
         'all_genre': all_genre
@@ -298,7 +266,7 @@ def story_post(request):
 def story_edit(request, story_id):
     current_story = get_object_or_404(Story, pk=story_id) 
     all_genre = Genre.objects.all()
-    template_name = 'old_straits_times/story_edit.html'
+    template_name = 'old_straits_times/story/edit.html'
 
     if request.method == 'POST':
         # delete story
@@ -332,7 +300,7 @@ def story_edit(request, story_id):
     })
 
 def settings_profile(request):
-    template_name = 'old_straits_times/settings_profile.html'
+    template_name = 'old_straits_times/settings/profile.html'
     author = get_object_or_404(Author, pk=request.user.pk)
     
     if request.method == 'POST':
@@ -376,7 +344,7 @@ def settings_profile(request):
     })
     
 def settings_theme(request):
-    template_name = 'old_straits_times/settings_theme.html'
+    template_name = 'old_straits_times/settings/theme.html'
     
     if request.method == 'POST':
         theme_color = request.POST.get('theme_color')
@@ -389,7 +357,7 @@ def settings_theme(request):
     return render(request, template_name, {})
 
 def settings_manage(request):
-    template_name = 'old_straits_times/settings_manage.html'
+    template_name = 'old_straits_times/settings/manage.html'
     
     if request.method == 'POST':
         post_type = request.POST.get('post_type')
@@ -428,15 +396,15 @@ def category(request):
     
     return render(request, template_name, context)
 
-def simplified_story(story: Story):
-    return {
-        'pk': story.pk,
-        'title': story.title,
-        'genre': story.get_genre(),
-        'author': story.author.username
-    }
-
 def search(request):
+    def simplified_story(story: Story):
+        return {
+            'pk': story.pk,
+            'title': story.title,
+            'genre': story.get_genre(),
+            'author': story.author.username
+        }
+
     if request.method == 'POST':
         search_query = request.POST.get('search_query')
         search_result = list(map(

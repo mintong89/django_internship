@@ -63,7 +63,7 @@ class Genre(models.Model):
 class Story(models.Model):
     title = models.CharField(max_length=50)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    genre = models.ManyToManyField(Genre)
+    genre = models.ManyToManyField(Genre, blank=True)
     abstract = models.TextField(max_length=250, blank=True,
                                    validators=[MaxLengthValidator(250)])
     date_published = models.DateTimeField('date published', auto_now_add=True)
@@ -103,7 +103,18 @@ class Comment(models.Model):
     
     def replies(self):
         return Comment.objects.filter(reply_to=self)
-    
+
+class StoryForm(ModelForm):
+    class Meta:
+        model = Story
+        fields = [
+            'title',
+            'genre',
+            'abstract',
+            'content',
+            'is_private',
+        ]
+
 class ProfileForm(ModelForm):
     class Meta:
         model = Author

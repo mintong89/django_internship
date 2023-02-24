@@ -1,4 +1,4 @@
-{% extends './base.html' %}
+{% extends '../base.html' %}
 
 {% block content %}
     <form method="POST" onsubmit="return submitStory(this)">
@@ -12,8 +12,8 @@
         </div>
         
         <div class="mb-4">
-            <label for="genre" class="form-label">Genre</label>
-            <select name="genre" class="form-select" size="3" aria-label="multiple select" multiple required>
+            <label for="genre_raw" class="form-label">Genre</label>
+            <select name="genre_raw" class="form-select" size="3" aria-label="multiple select" multiple required>
                 {% for genre in all_genre %}
                     <option value="{{ genre }}">{{ genre }}</option>
                 {% endfor %}

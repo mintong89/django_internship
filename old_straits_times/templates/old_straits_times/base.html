@@ -15,8 +15,9 @@
         <!-- css.gg -->
         <link href='https://css.gg/css' rel='stylesheet'>
 
+        {% load sass_tags %}
         <!-- custom styles -->
-        <link rel="stylesheet" href="{% static 'old_straits_times/customs.css' %}">
+        <link href="{% sass_src 'old_straits_times/customs.scss' %}" rel="stylesheet" type="text/css" />
     </head>
     <body>
         <header class="sticky-top shadow bg-body">
