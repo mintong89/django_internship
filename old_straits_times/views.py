@@ -247,14 +247,16 @@ def story_post(request):
         form = StoryForm(request.POST, request.FILES)
 
         if form.is_valid():
-            form.cleaned_data['author'] = Author.objects.get(pk=request.user.pk)
-            form.cleaned_data['date_published'] = timezone.now()
-            form.cleaned_data['date_last_updated'] = timezone.now()
+            new_story:Story = form.save(commit=False)
+
+            new_story.author = Author.objects.get(pk=request.user.pk)
+            new_story.date_published = timezone.now()
+            new_story.date_last_updated = timezone.now()
+
+            new_story.save()
 
             genre = request.POST.getlist('genre_raw')
             genre_pk = list(map(lambda x: Genre.objects.get(name=x), genre))
-            
-            new_story = form.save()
             new_story.genre.set(genre_pk)
 
             return HttpResponseRedirect(reverse('oldstimes:story', kwargs={'story_id': new_story.pk}))
@@ -276,23 +278,21 @@ def story_edit(request, story_id):
             return HttpResponseRedirect(reverse('oldstimes:index'))
         
         # edit story
-        title = request.POST.get('title')
-        genre = request.POST.getlist('genre')
-        abstract = request.POST.get('abstract')
-        content = request.POST.get('content')
-        is_private = request.POST.get('is_private')
-        date_last_updated = timezone.now()
+        form = StoryForm(request.POST, request.FILES, instance=current_story)
         
-        genre_pk = list(map(lambda x: Genre.objects.get(name=x), genre))
-        
-        current_story.title = title;
-        current_story.abstract = abstract;
-        current_story.content = content;
-        current_story.date_last_updated = date_last_updated
-        current_story.is_private = not not is_private
-        current_story.save()
-        current_story.genre.set(genre_pk)
-        return HttpResponseRedirect(reverse('oldstimes:story', kwargs={'story_id': current_story.pk}))
+        if form.is_valid():
+            form.save(commit=False)
+
+            current_story.author = Author.objects.get(pk=request.user.pk)
+            current_story.date_last_updated = timezone.now()
+
+            current_story.save()
+
+            genre = request.POST.getlist('genre_raw')
+            genre_pk = list(map(lambda x: Genre.objects.get(name=x), genre))
+            current_story.genre.set(genre_pk)
+
+            return HttpResponseRedirect(reverse('oldstimes:story', kwargs={'story_id': current_story.pk}))
 
     return render(request, template_name, {
         'all_genre': all_genre,
