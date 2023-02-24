@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxLengthValidator
 from django.db.models import Q
+from django.forms import ModelForm
 from ckeditor.fields import RichTextField
 from django_resized import ResizedImageField
 
@@ -102,3 +103,19 @@ class Comment(models.Model):
     
     def replies(self):
         return Comment.objects.filter(reply_to=self)
+    
+class ProfileForm(ModelForm):
+    class Meta:
+        model = Author
+        fields = [
+            'email',
+            'avatar',
+            'bio',
+            'first_name',
+            'last_name',
+            'country',
+            'social1',
+            'social2',
+            'social3',
+            'social4'
+        ]

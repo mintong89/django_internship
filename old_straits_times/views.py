@@ -5,12 +5,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, JsonResponse
 from django.utils import timezone
 from django.urls import reverse
-from django.forms import ModelForm
 
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 
-from .models import Story, Genre, Author, Comment
+from .models import ProfileForm, Story, Genre, Author, Comment
 
 from random import choice
 import re
@@ -326,29 +325,11 @@ def story_edit(request, story_id):
         current_story.save()
         current_story.genre.set(genre_pk)
         return HttpResponseRedirect(reverse('oldstimes:story', kwargs={'story_id': current_story.pk}))
-    
-    
 
     return render(request, template_name, {
         'all_genre': all_genre,
         'current_story': current_story
     })
-    
-class ProfileForm(ModelForm):
-    class Meta:
-        model = Author
-        fields = [
-            'email',
-            'avatar',
-            'bio',
-            'first_name',
-            'last_name',
-            'country',
-            'social1',
-            'social2',
-            'social3',
-            'social4'
-        ]
 
 def settings_profile(request):
     template_name = 'old_straits_times/settings_profile.html'
