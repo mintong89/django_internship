@@ -1,1 +1,3 @@
 old_straits_times/media/*
+
+__pycache__/

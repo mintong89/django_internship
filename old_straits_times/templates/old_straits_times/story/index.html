@@ -134,7 +134,7 @@
                                         </div>
                                     {% endif %}
                                     {% if comment.replies.count > 0 %}
-                                        {% include "./story_reply.html" with recursive_round=0 comment_pk=comment_pk replies=comment.replies %}
+                                        {% include "./reply.html" with recursive_round=0 comment_pk=comment_pk replies=comment.replies %}
                                     {% endif %}
                                 </div>
                             </div>
