@@ -115,6 +115,10 @@
                 </div>
             </div>
         </header>
+
+        <!-- ckeditor js -->
+        <script src="https://cdn.ckeditor.com/4.20.2/full/ckeditor.js"></script>
+
         <div class="container my-4">
             {% block content %}{% endblock content %}
         </div>
@@ -124,6 +128,16 @@
         <script>
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
             const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+        </script>
+
+        <!-- ckeditor javascript -->
+        <script>
+            const ckBodyStyle = getComputedStyle(document.body);
+            const ckBodyBG = ckBodyStyle.getPropertyValue('--bs-body-bg')
+            const ckBodyColor = ckBodyStyle.getPropertyValue('--bs-body-color')
+            
+            CKEDITOR.addCSS
+            CKEDITOR.addCss(`.cke_editable { background-color: ${ckBodyBG}; color: ${ckBodyColor}; }`);
         </script>
 
         <!-- js-cookie javascript -->

@@ -58,13 +58,9 @@
         <a class="fs-7" style="cursor: pointer;" onclick="history.back()">Go back.</a>
     {% endif %}
 
-    <!-- ckeditor javascript -->
-    <script src="https://cdn.ckeditor.com/4.20.2/full/ckeditor.js"></script>
     <script>
         CKEDITOR.replace('ckContent');
-    </script>
 
-    <script>
         // to show selected genre.
         const selectedGenre = document.getElementById('forGenre')?.value
         if (selectedGenre) {

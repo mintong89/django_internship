@@ -10,6 +10,20 @@
 .cursor-pointer {
   cursor: pointer; }
 
+.cke_chrome {
+  border-radius: .375rem !important;
+  overflow: hidden !important; }
+
+[data-bs-theme='dark'] .cke_chrome, [data-bs-theme='dark'] .cke_top, [data-bs-theme='dark'] .cke_bottom {
+  border-color: var(--bs-border-color) !important; }
+
+[data-bs-theme='dark'] .cke_top, [data-bs-theme='dark'] .cke_bottom, [data-bs-theme='dark'] .cke_combo_text, [data-bs-theme='dark'] .cke_button_label, [data-bs-theme='dark'] .cke_path_item {
+  background: var(--bs-body-bg) !important;
+  color: var(--bs-body-color) !important; }
+
+[data-bs-theme='dark'] .cke_button_icon {
+  filter: invert(1) !important; }
+
 a > .card:hover {
   filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.04)) drop-shadow(0 4px 3px rgba(0, 0, 0, 0.1));
   transition-property: all;

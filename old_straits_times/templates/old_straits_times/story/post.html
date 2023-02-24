@@ -28,7 +28,7 @@
         <div class="mb-4">
             <input name="content" id='contentInput' type='hidden' value="" />
             <label for="content" class="form-label">Content</label>
-            <div id="ckContent"></div>
+            <div class="ckeditor" id="ckContent"></div>
         </div>
 
         <div class="mb-4">
@@ -42,13 +42,9 @@
         </div>
     </form>
 
-    <!-- ckeditor javascript -->
-    <script src="https://cdn.ckeditor.com/4.20.2/full/ckeditor.js"></script>
     <script>
-        CKEDITOR.replace('ckContent');
-    </script>
+        CKEDITOR.replace('ckContent')
 
-    <script>
         const submitStory = (form) => {
             contentData = CKEDITOR.instances.ckContent.getData();
             if (contentData) {

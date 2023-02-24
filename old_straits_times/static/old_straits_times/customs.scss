@@ -14,18 +14,40 @@
   cursor: pointer;
 }
 
-a {
-  > .card:hover {
-    filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.04))
-      drop-shadow(0 4px 3px rgba(0, 0, 0, 0.1));
-    transition-property: all;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
+.cke {
+  &_chrome {
+    border-radius: .375rem !important;
+    overflow: hidden !important;
+  }
 
-    [data-bs-theme='dark'] & {
-      filter: drop-shadow(0 10px 8px rgba(255, 255, 255, 0.04))
-        drop-shadow(0 4px 3px rgba(255, 255, 255, 0.1));
+  [data-bs-theme='dark'] & {
+    &_chrome, &_top, &_bottom {
+      border-color: var(--bs-border-color) !important;
     }
+
+    &_top, &_bottom, &_combo_text, &_button_label, &_path_item {
+      background: var(--bs-body-bg) !important;
+      color: var(--bs-body-color) !important;
+    }
+  
+    &_button_icon {
+      filter: invert(1) !important;
+    }
+  }
+}
+
+.card {
+  a > &:hover {
+    filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.04))
+    drop-shadow(0 4px 3px rgba(0, 0, 0, 0.1));
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+
+  [data-bs-theme='dark'] & {
+    filter: drop-shadow(0 10px 8px rgba(255, 255, 255, 0.04))
+      drop-shadow(0 4px 3px rgba(255, 255, 255, 0.1));
+  }
   }
 }
 
