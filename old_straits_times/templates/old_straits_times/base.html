@@ -185,7 +185,7 @@
         `
 
         let typingTimer;                //timer identifier
-        let doneTypingInterval = 1000;  //time in ms (1 second)
+        let doneTypingInterval = 500;  //time in ms (1 second)
         const searchInputEl = document.getElementById('searchInput')
         const resultPanelEl = document.getElementById('resultPanel')   
         const csrftoken = Cookies.get('csrftoken')
@@ -195,33 +195,29 @@
 
             data.set('search_query', searchInputEl.value)
 
-            if (searchInputEl.value?.length >= 3) {
-                fetch("{% url 'oldstimes:search' %}", {
-                    method: 'POST',
-                    mode: "same-origin",
-                    headers: { "X-CSRFToken": csrftoken },
-                    body: data
-                })
-                .then(res => res.json().then(data => {
-                    const result = JSON.parse(data.result)
+            fetch("{% url 'oldstimes:search' %}", {
+                method: 'POST',
+                mode: "same-origin",
+                headers: { "X-CSRFToken": csrftoken },
+                body: data
+            })
+            .then(res => res.json().then(data => {
+                const result = JSON.parse(data.result)
 
-                    let resultEl = ''
-                    if (result instanceof Array && result.length != 0) {
-                        result.map(value => resultEl += searchItem({
-                            pk: value.pk,
-                            title: value.title,
-                            genre: value.genre,
-                            author: value.author
-                        }))
-                    } else {
-                        resultEl = noResult
-                    }
-                    resultPanelEl.innerHTML = resultEl
-                }))
-                .catch(err => console.log(err))
-            } else {
-                resultPanelEl.innerHTML = noResult
-            }
+                let resultEl = ''
+                if (result instanceof Array && result.length != 0) {
+                    result.map(value => resultEl += searchItem({
+                        pk: value.pk,
+                        title: value.title,
+                        genre: value.genre,
+                        author: value.author
+                    }))
+                } else {
+                    resultEl = noResult
+                }
+                resultPanelEl.innerHTML = resultEl
+            }))
+            .catch(err => console.log(err))
         }
 
         searchInputEl.addEventListener('keyup', () => {
